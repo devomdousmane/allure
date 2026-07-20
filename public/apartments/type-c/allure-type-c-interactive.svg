@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     width="2400" height="1392"
+     viewBox="0 0 1536 891"
+     preserveAspectRatio="xMidYMid meet"
+     aria-labelledby="plan-title plan-desc">
+  <title id="plan-title">Plan interactif — Appartement Type C</title>
+  <desc id="plan-desc">Plan de l'appartement Type C avec 16 zones interactives.</desc>
+
+  <style>
+    svg { background: transparent; }
+    #floorplan-image { pointer-events: none; }
+    .room {
+      cursor: pointer;
+      outline: none;
+    }
+
+    .room-hit {
+      fill: rgba(0, 125, 145, 0);
+      stroke: rgba(0, 125, 145, 0);
+      stroke-width: 3;
+      vector-effect: non-scaling-stroke;
+      transition:
+        fill .22s ease,
+        stroke .22s ease,
+        filter .22s ease;
+    }
+
+    .room:hover .room-hit,
+    .room:focus .room-hit,
+    .room.is-active .room-hit {
+      fill: rgba(0, 125, 145, .22);
+      stroke: rgba(0, 125, 145, .95);
+      filter: drop-shadow(0 0 9px rgba(0, 125, 145, .55));
+    }
+
+    .room:focus-visible .room-hit {
+      stroke-width: 5;
+    }
+  </style>
+
+  <image id="floorplan-image"
+         x="0" y="0" width="1536" height="891"
+         preserveAspectRatio="xMidYMid meet"
+         href="dimensions-plan-transparent.png" />
+
+  <g id="interactive-rooms">
+    
+    <g id="room-01" class="room" role="button" tabindex="0"
+       data-room="01" data-name="Toilettes Visiteur" data-area="3.01">
+      <title>01 — Toilettes Visiteur — 3.01 m²</title>
+      <polygon class="room-hit" points="1380,642 1495,642 1495,855 1380,855" />
+    </g>
+    <g id="room-02" class="room" role="button" tabindex="0"
+       data-room="02" data-name="Salon et Salle à manger" data-area="69.60">
+      <title>02 — Salon et Salle à manger — 69.60 m²</title>
+      <polygon class="room-hit" points="340,492 855,492 855,855 340,855" />
+    </g>
+    <g id="room-03" class="room" role="button" tabindex="0"
+       data-room="03" data-name="Kitchnette" data-area="10.09">
+      <title>03 — Kitchnette — 10.09 m²</title>
+      <polygon class="room-hit" points="855,492 1495,492 1495,855 855,855" />
+    </g>
+    <g id="room-04" class="room" role="button" tabindex="0"
+       data-room="04" data-name="Cuisine" data-area="11.72">
+      <title>04 — Cuisine — 11.72 m²</title>
+      <polygon class="room-hit" points="1245,185 1495,185 1495,492 1245,492" />
+    </g>
+    <g id="room-05" class="room" role="button" tabindex="0"
+       data-room="05" data-name="Buanderie" data-area="3.17">
+      <title>05 — Buanderie — 3.17 m²</title>
+      <polygon class="room-hit" points="1370,20 1495,20 1495,185 1370,185" />
+    </g>
+    <g id="room-06" class="room" role="button" tabindex="0"
+       data-room="06" data-name="Chambre Domestique" data-area="3.70">
+      <title>06 — Chambre Domestique — 3.70 m²</title>
+      <polygon class="room-hit" points="1245,20 1370,20 1370,185 1245,185" />
+    </g>
+    <g id="room-07" class="room" role="button" tabindex="0"
+       data-room="07" data-name="Toilettes Domestiques" data-area="1.84">
+      <title>07 — Toilettes Domestiques — 1.84 m²</title>
+      <polygon class="room-hit" points="1245,185 1370,185 1370,280 1245,280" />
+    </g>
+    <g id="room-08" class="room" role="button" tabindex="0"
+       data-room="08" data-name="Chambre Enfants 02" data-area="17.41">
+      <title>08 — Chambre Enfants 02 — 17.41 m²</title>
+      <polygon class="room-hit" points="960,20 1245,20 1245,325 960,325" />
+    </g>
+    <g id="room-09" class="room" role="button" tabindex="0"
+       data-room="09" data-name="Salle de bain Ch. 02" data-area="4.67">
+      <title>09 — Salle de bain Ch. 02 — 4.67 m²</title>
+      <polygon class="room-hit" points="1030,325 1245,325 1245,492 1030,492" />
+    </g>
+    <g id="room-10" class="room" role="button" tabindex="0"
+       data-room="10" data-name="Salle de bain Ch. 01" data-area="4.67">
+      <title>10 — Salle de bain Ch. 01 — 4.67 m²</title>
+      <polygon class="room-hit" points="665,325 855,325 855,492 665,492" />
+    </g>
+    <g id="room-11" class="room" role="button" tabindex="0"
+       data-room="11" data-name="Chambre Enfants 01" data-area="17.41">
+      <title>11 — Chambre Enfants 01 — 17.41 m²</title>
+      <polygon class="room-hit" points="665,20 960,20 960,325 665,325" />
+    </g>
+    <g id="room-12" class="room" role="button" tabindex="0"
+       data-room="12" data-name="Salle de bain Ch. Parents" data-area="11.25">
+      <title>12 — Salle de bain Ch. Parents — 11.25 m²</title>
+      <polygon class="room-hit" points="235,20 665,20 665,185 235,185" />
+    </g>
+    <g id="room-13" class="room" role="button" tabindex="0"
+       data-room="13" data-name="Chambre Parents" data-area="22.24">
+      <title>13 — Chambre Parents — 22.24 m²</title>
+      <polygon class="room-hit" points="235,185 665,185 665,492 235,492" />
+    </g>
+    <g id="room-14" class="room" role="button" tabindex="0"
+       data-room="14" data-name="Terrasse" data-area="16.99">
+      <title>14 — Terrasse — 16.99 m²</title>
+      <polygon class="room-hit" points="145,492 340,492 340,855 145,855" />
+    </g>
+    <g id="room-15" class="room" role="button" tabindex="0"
+       data-room="15" data-name="Machine Climatisation" data-area="0.71">
+      <title>15 — Machine Climatisation — 0.71 m²</title>
+      <polygon class="room-hit" points="145,805 235,805 235,875 145,875" />
+    </g>
+    <g id="room-16" class="room" role="button" tabindex="0"
+       data-room="16" data-name="Bac à fleurs" data-area="14.18">
+      <title>16 — Bac à fleurs — 14.18 m²</title>
+      <polygon class="room-hit" points="35,20 145,20 145,855 35,855" />
+    </g>
+  </g>
+</svg>

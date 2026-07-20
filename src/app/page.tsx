@@ -1,65 +1,151 @@
-import Image from "next/image";
+import type { Metadata } from "next";
+import { SiteHeader } from "@/components/layout/site-header";
+import { SiteFooter } from "@/components/layout/site-footer";
+import { CinematicHero } from "@/components/sections/cinematic-hero";
+import { WhoWeAreSection } from "@/components/sections/who-we-are-section";
+import { StatsBand } from "@/components/sections/stats-band";
+import { AboutSection } from "@/components/sections/about-section";
+import { OfferingsSection } from "@/components/sections/offerings-section";
+import { ServicesSection } from "@/components/sections/services-section";
+import { ConstructionVideoSection } from "@/components/sections/construction-video-section";
+import { AmenitiesSection } from "@/components/sections/amenities-section";
+import { CategoriesSection } from "@/components/sections/categories-section";
+import { ApartmentsSection } from "@/components/sections/apartments-section";
+import { NeighborhoodSection } from "@/components/sections/neighborhood-section";
+import { TestimonialsSection } from "@/components/sections/testimonials-section";
+import { PartnersSection } from "@/components/sections/partners-section";
+import { ContactSection } from "@/components/sections/contact-section";
+import { FaqSection } from "@/components/sections/faq-section";
+import {
+  HomeScrollShell,
+  SectionChapter,
+  ScrollHint,
+  ChapterScrollOrchestrator,
+  AnnexStatement,
+  AnnexOfferingsPin,
+  AnnexVideoOverlay,
+  AnnexGalleryBridge,
+  AnnexTypesPin,
+  AnnexPresenceLine,
+  AnnexStatsRibbon,
+  AnnexNeighborhoodRing,
+  AnnexVoicesMark,
+  AnnexFinale,
+  AnnexPartnersDrift,
+  AnnexServicesPulse,
+} from "@/components/home-scroll";
+import {
+  JsonLd,
+  apartmentComplexJsonLd,
+  faqPageJsonLd,
+} from "@/components/seo/json-ld";
+import { SITE } from "@/lib/site";
+
+export const metadata: Metadata = {
+  title: { absolute: `${SITE.name} — ${SITE.tagline}` },
+  description: SITE.description,
+  alternates: { canonical: "/" },
+};
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+    <>
+      <JsonLd data={[apartmentComplexJsonLd(), faqPageJsonLd()]} />
+      <SiteHeader />
+      <HomeScrollShell>
+        <ChapterScrollOrchestrator />
+        <main className="w-full flex-1">
+          <div className="relative">
+            <CinematicHero />
+            <ScrollHint />
+          </div>
+
+          <SectionChapter index="01" label="Présence" sectionId="qui-sommes-nous">
+            <div className="relative">
+              <AnnexPresenceLine />
+              <WhoWeAreSection />
+            </div>
+          </SectionChapter>
+
+          <SectionChapter index="02" label="Chiffres" hideChrome sectionId="stats">
+            <div className="relative overflow-hidden">
+              <AnnexStatsRibbon />
+              <StatsBand />
+            </div>
+          </SectionChapter>
+
+          <AnnexStatement />
+
+          <SectionChapter index="03" label="Vision" sectionId="a-propos">
+            <AboutSection />
+          </SectionChapter>
+
+          <div className="relative">
+            <AnnexOfferingsPin />
+            <SectionChapter index="04" label="Offre" sectionId="accompagnement">
+              <OfferingsSection />
+            </SectionChapter>
+            <SectionChapter index="05" label="Services" sectionId="services">
+              <AnnexServicesPulse />
+              <ServicesSection />
+            </SectionChapter>
+          </div>
+
+          <SectionChapter index="06" label="Chantier" hideChrome sectionId="chantier">
+            <div className="relative">
+              <ConstructionVideoSection />
+              <AnnexVideoOverlay />
+            </div>
+          </SectionChapter>
+
+          <SectionChapter index="07" label="Résidence" sectionId="residence">
+            <AmenitiesSection />
+          </SectionChapter>
+
+          <AnnexGalleryBridge />
+
+          <SectionChapter index="08" label="Galerie" sectionId="categories">
+            <CategoriesSection />
+          </SectionChapter>
+
+          <div className="relative">
+            <AnnexTypesPin />
+            <SectionChapter index="09" label="Typologies" sectionId="appartements">
+              <ApartmentsSection />
+            </SectionChapter>
+          </div>
+
+          <SectionChapter index="10" label="Quartier" sectionId="quartier">
+            <div className="relative">
+              <AnnexNeighborhoodRing />
+              <NeighborhoodSection />
+            </div>
+          </SectionChapter>
+
+          <SectionChapter index="11" label="Voix" sectionId="temoignages">
+            <div className="relative overflow-hidden">
+              <AnnexVoicesMark />
+              <TestimonialsSection />
+            </div>
+          </SectionChapter>
+
+          <SectionChapter index="12" label="Partenaires" hideChrome sectionId="partenaires">
+            <AnnexPartnersDrift />
+            <PartnersSection />
+          </SectionChapter>
+
+          <AnnexFinale />
+
+          <SectionChapter index="13" label="Contact" sectionId="contact">
+            <ContactSection />
+          </SectionChapter>
+
+          <SectionChapter index="14" label="FAQ" hideChrome sectionId="faq">
+            <FaqSection />
+          </SectionChapter>
+        </main>
+      </HomeScrollShell>
+      <SiteFooter />
+    </>
   );
 }

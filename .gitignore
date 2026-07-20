@@ -33,9 +33,21 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# Cursor MCP (contient la clé API 21st)
+.cursor/mcp.json
+
 # vercel
 .vercel
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+.cursor
+
+# Médias sources trop lourds pour GitHub (>100 Mo) — garder en local / CDN / Git LFS
+public/video/contruction.mp4
+public/video/video-1.MOV
+public/video/video-2.MOV
+public/Allure/*.MOV
+# PDF brochure volumineux (~76 Mo) : héberger ailleurs ou Git LFS si besoin en CI
+# public/apartments/brochure.pdf

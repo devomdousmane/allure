@@ -1,0 +1,15 @@
+export const AMENITY_LABELS = [
+  "Piscine à débordement",
+  "Salle de sport équipée",
+  "Sécurité 24h/24",
+  "Vidéosurveillance",
+  "Parking privé",
+  "Groupe électrogène",
+  "Connexion fibre",
+  "Climatisation",
+  "Espaces verts",
+  "Aire de jeux enfants",
+  "Salle polyvalente",
+  "Espace lounge",
+  "Conciergerie",
+] as const;
