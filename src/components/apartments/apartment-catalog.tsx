@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { MediaImage } from "@/components/ui/media-image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import {
   shortApartmentName,
 } from "@/data/apartments/format";
 import { cn } from "@/lib/utils";
+import { SITE } from "@/lib/site";
 
 type ApartmentCatalogProps = {
   apartments: ApartmentDetail[];
@@ -33,7 +34,7 @@ function catalogStats(apartment: ApartmentDetail) {
 export function ApartmentCatalog({ apartments }: ApartmentCatalogProps) {
   return (
     <>
-      {/* Navigation rapide */}
+      {/* Navigation rapide — jonction hero gérée par PageHero (seam bas) */}
       <nav
         aria-label="Typologies"
         className="sticky top-16 z-20 border-b border-allure-petrol/10 bg-white/90 backdrop-blur-md dark:border-allure-sand/10 dark:bg-allure-petrol-deep/90 lg:top-[4.5rem]"
@@ -66,7 +67,8 @@ export function ApartmentCatalog({ apartments }: ApartmentCatalogProps) {
             </h2>
             <p className="mt-3 font-sans text-sm leading-relaxed text-allure-ink/65 dark:text-allure-sand/65">
               Surfaces réelles, plans interactifs et ambiances intérieures.
-              Prix et disponibilités sur demande.
+              À partir de {SITE.priceFrom} — disponibilités confirmées sur
+              rendez-vous.
             </p>
           </div>
 
@@ -116,11 +118,12 @@ export function ApartmentCatalog({ apartments }: ApartmentCatalogProps) {
                     reversed && "lg:order-2"
                   )}
                 >
-                  <Image
+                  <MediaImage
                     src={apt.heroImage}
                     alt={apt.name}
                     fill
                     sizes="(min-width: 1024px) 50vw, 100vw"
+                    loaderSize="md"
                     className="object-cover"
                     priority={index === 0}
                   />
@@ -178,7 +181,7 @@ export function ApartmentCatalog({ apartments }: ApartmentCatalogProps) {
                     <Button
                       asChild
                       size="lg"
-                      className="h-12 w-full rounded-full bg-allure-petrol text-white hover:bg-allure-petrol-deep dark:bg-allure-gold dark:text-allure-petrol-deep dark:hover:bg-allure-gold/90 sm:w-auto"
+                      className="btn-cta w-full sm:w-auto"
                     >
                       <Link href={`/les-appartements/${apt.slug}`}>
                         Découvrir
@@ -216,25 +219,29 @@ export function ApartmentCatalog({ apartments }: ApartmentCatalogProps) {
             <Button
               asChild
               size="lg"
-              className="h-12 w-full rounded-full bg-allure-petrol text-white hover:bg-allure-petrol-deep dark:bg-allure-gold dark:text-allure-petrol-deep dark:hover:bg-allure-gold/90 sm:w-auto"
+              className="btn-cta w-full sm:w-auto"
             >
-              <Link href="/contact">Nous contacter</Link>
+              <Link href="/rendez-vous">Nous contacter</Link>
             </Button>
             <Button
               asChild
               size="lg"
               variant="outline"
-              className="h-12 w-full rounded-full border-allure-petrol/25 bg-transparent text-allure-petrol hover:bg-allure-petrol/5 dark:border-allure-sand/30 dark:text-allure-sand dark:hover:bg-allure-sand/10 dark:hover:text-allure-sand sm:w-auto"
+              className="w-full border-allure-petrol/25 bg-transparent text-allure-petrol hover:bg-allure-petrol/5 dark:border-allure-sand/30 dark:text-allure-sand dark:hover:bg-allure-sand/10 dark:hover:text-allure-sand sm:w-auto"
             >
-              <a
-                href="/apartments/brochure.pdf"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Brochure PDF
-              </a>
+              <Link href="/brochure">Feuilleter la brochure</Link>
             </Button>
           </div>
+          <p className="mt-4">
+            <a
+              href="/apartments/brochure.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-sans text-xs text-allure-ink/45 underline-offset-4 transition hover:text-allure-petrol hover:underline dark:text-allure-sand/45 dark:hover:text-allure-gold"
+            >
+              Télécharger le PDF
+            </a>
+          </p>
         </div>
       </section>
     </>

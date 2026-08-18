@@ -1,18 +1,19 @@
 "use client";
 
 import { useRef } from "react";
-import Image from "next/image";
+import { MediaImage } from "@/components/ui/media-image";
 import { Mail, Phone, MapPin } from "lucide-react";
 import { ContactForm } from "@/components/forms/contact-form";
-import { SectionSeam, SEAM } from "@/components/ui/section-seam";
+import { HeroExitFade, SectionSeam, SEAM } from "@/components/ui/section-seam";
 import { SITE } from "@/lib/site";
+import { TEMOIN_MEDIA } from "@/lib/media";
 import { useSectionReveal } from "@/hooks/use-section-reveal";
 
 const TAGS = ["Vie de standing", "Une approche à l'écoute", "Confiance"];
 
 export function ContactSection() {
   const sectionRef = useRef<HTMLElement>(null);
-  useSectionReveal(sectionRef);
+  useSectionReveal(sectionRef, { debugId: "contact" });
 
   return (
     <section
@@ -20,17 +21,26 @@ export function ContactSection() {
       id="contact"
       className="relative overflow-hidden py-24 lg:py-32"
     >
-      <Image
-        src="/hero-sequence/frame_024.webp"
+      <MediaImage
+        src={TEMOIN_MEDIA.salon4}
         alt=""
         fill
         sizes="100vw"
+        loaderTone="gold"
+        loaderSize="md"
         className="object-cover"
+      >
+        <div className="absolute inset-0 bg-allure-sand/65 dark:bg-allure-petrol/70" />
+      </MediaImage>
+      <SectionSeam
+        edges="top"
+        from={SEAM.sand}
+        fromDark={SEAM.petrolDeep}
       />
-      <div className="absolute inset-0 bg-allure-sand/65 dark:bg-allure-petrol/70" />
-      <SectionSeam from={SEAM.white} fromDark={SEAM.petrolDeep} />
+      {/* Jonction → FAQ (blanc / pétrole profond) */}
+      <HeroExitFade to={SEAM.white} toDark={SEAM.petrolDeep} />
 
-      <div className="relative mx-auto max-w-6xl px-6">
+      <div className="relative z-[2] mx-auto max-w-6xl px-6">
         <div className="mb-16 flex flex-wrap items-center justify-between gap-4 font-sans text-xs uppercase tracking-[0.25em] text-allure-petrol/60 dark:text-allure-sand/60">
           {TAGS.map((tag) => (
             <span key={tag} data-reveal="eyebrow">
@@ -106,7 +116,14 @@ export function ContactSection() {
               data-split-animate="words"
               className="mt-1 font-sans text-sm text-allure-ink/50 dark:text-white/50"
             >
-              Notre équipe vous répond sous 24h.
+              Notre équipe vous répond sous 24h. Pour une visite,{" "}
+              <a
+                href="/rendez-vous"
+                className="text-allure-petrol underline-offset-2 hover:underline dark:text-allure-gold"
+              >
+                planifiez un rendez-vous
+              </a>
+              .
             </p>
             <ContactForm className="mt-6" source="home-contact" />
           </div>

@@ -32,22 +32,42 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
-# Cursor MCP (contient la clé API 21st)
+# Cursor / agents — ne pas versionner
+.cursor
 .cursor/mcp.json
+.agents/
+CLAUDE.md
+AGENTS.md
+PROMPT.md
+skills-lock.json
+shoot2.js
 
 # vercel
 .vercel
 
+# netlify
+.netlify
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-.cursor
 
-# Médias sources trop lourds pour GitHub (>100 Mo) — garder en local / CDN / Git LFS
+# Médias sources / inutilisés (le site sert les versions optimisées)
 public/video/contruction.mp4
 public/video/video-1.MOV
 public/video/video-2.MOV
+public/video/scrolling-allure-1080p.mp4
+public/video/frame-videos/video-1.mp4
+public/video/frame-videos/video-2.mp4
+# >100 Mo — GitHub refuse ; garder en local / CDN
+public/video/compressed/contruction.mp4
 public/Allure/*.MOV
-# PDF brochure volumineux (~76 Mo) : héberger ailleurs ou Git LFS si besoin en CI
+public/appartement-temoins-1/
+public/appatement-temoins/
+public/partenaire/Listing-Logo.jpg
+public/partenaire/Listing-Logo.png
+public/partenaire/Listing-Logo-twilio-640.png
+# PDF brochure volumineux (~76 Mo)
 # public/apartments/brochure.pdf

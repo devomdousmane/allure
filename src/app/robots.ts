@@ -1,15 +1,33 @@
 import type { MetadataRoute } from "next";
-import { SITE } from "@/lib/site";
-
-const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ?? SITE.url;
+import { getSiteUrl } from "@/lib/site";
 
 export default function robots(): MetadataRoute.Robots {
+  const siteUrl = getSiteUrl();
+
   return {
-    rules: {
-      userAgent: "*",
-      allow: "/",
-    },
+    rules: [
+      {
+        userAgent: "*",
+        allow: ["/", "/llms.txt"],
+        disallow: ["/api/"],
+      },
+      {
+        userAgent: [
+          "GPTBot",
+          "ChatGPT-User",
+          "Google-Extended",
+          "ClaudeBot",
+          "anthropic-ai",
+          "PerplexityBot",
+          "Applebot-Extended",
+          "CCBot",
+          "meta-externalagent",
+          "Bytespider",
+        ],
+        allow: "/",
+      },
+    ],
     sitemap: `${siteUrl}/sitemap.xml`,
+    host: siteUrl,
   };
 }

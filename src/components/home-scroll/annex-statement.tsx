@@ -2,92 +2,120 @@
 
 import { useRef } from "react";
 import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useGSAP } from "@gsap/react";
-import { registerGsap } from "@/lib/gsap/register";
-import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
-import { splitForReveal } from "@/lib/gsap/split-text";
+import { useSectionReveal } from "@/hooks/use-section-reveal";
+import { EASE } from "@/lib/gsap/presets";
+import { SectionSeam, SEAM } from "@/components/ui/section-seam";
 
-registerGsap();
+const LETTERS = ["A", "L", "L", "U", "R", "E"] as const;
 
 /**
- * Oversized « ALLURE » — once reveal (reliable) + light scrub polish.
+ * Bandeau « ALLURE » — build progressif :
+ * A → AL → ALL → ALLU → ALLUR → ALLURE
  */
 export function AnnexStatement() {
   const rootRef = useRef<HTMLElement>(null);
-  const wordRef = useRef<HTMLParagraphElement>(null);
-  const reduced = usePrefersReducedMotion();
 
-  useGSAP(
-    () => {
-      const root = rootRef.current;
-      const word = wordRef.current;
-      if (!root || !word || reduced !== false) return;
+  useSectionReveal(rootRef, {
+    debugId: "annexStatement",
+    skipDefaults: true,
+    onEnter: (root) => {
+      const soft = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const chars = root.querySelectorAll<HTMLElement>("[data-letter]");
+      const sub = root.querySelector<HTMLElement>("[data-statement-sub]");
+      const word = root.querySelector<HTMLElement>("[data-statement-word]");
 
-      const { targets, revert } = splitForReveal(word, {
-        types: "chars",
-        animate: "chars",
+      if (!chars.length) return;
+
+      if (soft) {
+        gsap.set([word, ...chars, sub].filter(Boolean), {
+          autoAlpha: 1,
+          clearProps: "transform",
+        });
+        return;
+      }
+
+      gsap.set(word, { autoAlpha: 1 });
+      gsap.set(chars, {
+        autoAlpha: 0,
+        yPercent: 110,
+        rotateX: 35,
+        transformOrigin: "50% 100%",
       });
+      if (sub) gsap.set(sub, { autoAlpha: 0, y: 14 });
 
-      if (!targets.length) return revert;
+      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
-      let played = false;
-      const play = () => {
-        if (played) return;
-        played = true;
-        gsap.fromTo(
-          targets,
-          { yPercent: 110, autoAlpha: 0 },
+      // Une lettre après l’autre — rythme serré
+      chars.forEach((char, i) => {
+        tl.to(
+          char,
           {
-            yPercent: 0,
             autoAlpha: 1,
-            duration: 0.9,
-            ease: "power3.out",
-            stagger: 0.045,
-          }
+            yPercent: 0,
+            rotateX: 0,
+            duration: 0.22,
+          },
+          i === 0 ? 0 : `+=0.04`
         );
-      };
-
-      const st = ScrollTrigger.create({
-        trigger: root,
-        start: "top 80%",
-        once: true,
-        onEnter: play,
-        onRefresh: (self) => {
-          if (self.progress > 0) play();
-        },
       });
 
-      const failsafe = window.setTimeout(() => {
-        if (!played) play();
-      }, 2500);
+      if (sub) {
+        tl.to(
+          sub,
+          {
+            autoAlpha: 1,
+            y: 0,
+            duration: 0.35,
+            ease: EASE.soft,
+          },
+          "-=0.05"
+        );
+      }
 
       return () => {
-        window.clearTimeout(failsafe);
-        st.kill();
-        revert();
+        tl.kill();
       };
     },
-    { scope: rootRef, dependencies: [reduced] }
-  );
+  });
 
   return (
     <section
       ref={rootRef}
-      aria-hidden
+      id="annex-statement"
+      aria-label="Allure"
       className="relative overflow-hidden bg-allure-sand py-20 lg:py-28 dark:bg-allure-petrol-deep"
     >
-      <div className="mx-auto flex max-w-6xl items-center justify-center px-6">
+      <SectionSeam
+        edges="top"
+        from={SEAM.white}
+        fromDark={SEAM.petrolDeep}
+      />
+
+      <div className="relative z-[2] mx-auto flex max-w-6xl flex-col items-center justify-center px-6">
         <p
-          ref={wordRef}
-          className="font-heading text-[clamp(3.5rem,14vw,11rem)] font-medium leading-none tracking-[0.1em] text-allure-petrol dark:text-allure-gold"
+          data-statement-word
+          data-reveal="title"
+          className="flex overflow-hidden font-heading text-[clamp(3.5rem,14vw,11rem)] font-medium leading-none tracking-[0.1em] text-allure-petrol dark:text-allure-gold"
+          style={{ perspective: "800px" }}
         >
-          ALLURE
+          {LETTERS.map((letter, i) => (
+            <span
+              key={`${letter}-${i}`}
+              data-letter
+              className="inline-block will-change-transform"
+            >
+              {letter}
+            </span>
+          ))}
+        </p>
+        <p
+          data-statement-sub
+          data-reveal="text"
+          className="mt-6 text-center font-sans text-[10px] uppercase tracking-[0.4em] text-allure-petrol/40 dark:text-allure-sand/40"
+        >
+          Almadies — Dakar
         </p>
       </div>
-      <p className="mt-6 text-center font-sans text-[10px] uppercase tracking-[0.4em] text-allure-petrol/40 dark:text-allure-sand/40">
-        Almadies — Dakar
-      </p>
     </section>
   );
 }

@@ -1,13 +1,15 @@
 "use client";
 
 import { useRef } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { gsap } from "gsap";
+import { MediaImage } from "@/components/ui/media-image";
 import { SectionSeam, SEAM } from "@/components/ui/section-seam";
 import { cn } from "@/lib/utils";
+import { TEMOIN_MEDIA } from "@/lib/media";
 import { useSectionReveal } from "@/hooks/use-section-reveal";
 import { DURATION, EASE, STAGGER } from "@/lib/gsap/presets";
+import { HomeCtaRow } from "@/components/home-scroll/home-cta-row";
 
 type Tile = {
   id: string;
@@ -17,43 +19,122 @@ type Tile = {
   size: "sm" | "md" | "lg" | "xl";
 };
 
+/** Mosaïque — intérieurs appartements témoins. */
 const COLUMNS: { offset: string; items: Tile[] }[] = [
   {
     offset: "lg:mt-10",
     items: [
-      { id: "1", label: "Piscine & détente", image: "/Allure/HD_139.webp", href: "/residence", size: "md" },
-      { id: "2", label: "Sécurité 24h/24", image: "/hero-sequence/frame_010.webp", href: "/residence", size: "lg" },
+      {
+        id: "1",
+        label: "Salon",
+        image: TEMOIN_MEDIA.salon1,
+        href: "/appartements-temoins/type-d",
+        size: "md",
+      },
+      {
+        id: "2",
+        label: "Chambre",
+        image: TEMOIN_MEDIA.chambre1,
+        href: "/appartements-temoins/type-d",
+        size: "lg",
+      },
     ],
   },
   {
     offset: "lg:-mt-2",
     items: [
-      { id: "3", label: "Appartements lumineux", image: "/hero-sequence/frame_016.webp", href: "/les-appartements", size: "lg" },
-      { id: "4", label: "Salle de sport", image: "/Allure/HD_147.webp", href: "/residence", size: "md" },
-      { id: "5", label: "Confort & fibre", image: "/hero-sequence/frame_008.webp", href: "/residence", size: "md" },
+      {
+        id: "3",
+        label: "Séjour",
+        image: TEMOIN_MEDIA.salon3,
+        href: "/appartements-temoins/type-d",
+        size: "lg",
+      },
+      {
+        id: "4",
+        label: "Cuisine",
+        image: TEMOIN_MEDIA.cuisine1,
+        href: "/appartements-temoins/type-d",
+        size: "md",
+      },
+      {
+        id: "5",
+        label: "Salle de bain",
+        image: TEMOIN_MEDIA.sdb1,
+        href: "/appartements-temoins/type-d",
+        size: "md",
+      },
     ],
   },
   {
     offset: "lg:mt-16",
     items: [
-      { id: "6", label: "Proche de la plage", image: "/Allure/HD.webp", href: "/#quartier", size: "sm" },
-      { id: "7", label: "Standing Almadies", image: "/Allure/HD_172.webp", href: "/a-propos", size: "xl" },
-      { id: "8", label: "Espaces verts", image: "/hero-sequence/frame_012.webp", href: "/residence", size: "lg" },
+      {
+        id: "6",
+        label: "Axonométrie",
+        image: TEMOIN_MEDIA.axo1,
+        href: "/appartements-temoins",
+        size: "sm",
+      },
+      {
+        id: "7",
+        label: "Open space",
+        image: TEMOIN_MEDIA.salon2,
+        href: "/appartements-temoins/type-d",
+        size: "xl",
+      },
+      {
+        id: "8",
+        label: "Salon Type A",
+        image: TEMOIN_MEDIA.typeASalon,
+        href: "/appartements-temoins/type-a",
+        size: "lg",
+      },
     ],
   },
   {
     offset: "lg:mt-4",
     items: [
-      { id: "9", label: "Vues dégagées", image: "/hero-sequence/frame_020.webp", href: "/les-appartements", size: "xl" },
-      { id: "10", label: "Lounge", image: "/Allure/HD_137.webp", href: "/residence", size: "sm" },
-      { id: "11", label: "Parking privé", image: "/hero-sequence/frame_018.webp", href: "/residence", size: "lg" },
+      {
+        id: "9",
+        label: "Chambre parentale",
+        image: TEMOIN_MEDIA.typeAChambre,
+        href: "/appartements-temoins/type-a",
+        size: "xl",
+      },
+      {
+        id: "10",
+        label: "Salle d’eau",
+        image: TEMOIN_MEDIA.sdb2,
+        href: "/appartements-temoins/type-d",
+        size: "sm",
+      },
+      {
+        id: "11",
+        label: "Cuisine — détail",
+        image: TEMOIN_MEDIA.cuisine2,
+        href: "/appartements-temoins/type-d",
+        size: "lg",
+      },
     ],
   },
   {
     offset: "lg:mt-12",
     items: [
-      { id: "12", label: "Vie de famille", image: "/hero-sequence/frame_022.webp", href: "/les-appartements", size: "lg" },
-      { id: "13", label: "Conciergerie", image: "/hero-sequence/frame_024.webp", href: "/contact", size: "md" },
+      {
+        id: "12",
+        label: "Chambre",
+        image: TEMOIN_MEDIA.chambre3,
+        href: "/appartements-temoins/type-d",
+        size: "lg",
+      },
+      {
+        id: "13",
+        label: "Volumes",
+        image: TEMOIN_MEDIA.salon5,
+        href: "/appartements-temoins",
+        size: "md",
+      },
     ],
   },
 ];
@@ -76,11 +157,12 @@ function GalleryTile({ tile }: { tile: Tile }) {
           SIZE_CLASS[tile.size]
         )}
       >
-        <Image
+        <MediaImage
           src={tile.image}
           alt={tile.label}
           fill
           sizes="(min-width: 1024px) 18vw, (min-width: 640px) 40vw, 80vw"
+          loading="lazy"
           className="object-cover transition-transform duration-700 group-hover:scale-105"
         />
         <div className="absolute inset-0 bg-allure-petrol-deep/0 transition-colors duration-300 group-hover:bg-allure-petrol-deep/35" />
@@ -96,6 +178,7 @@ export function CategoriesSection() {
   const sectionRef = useRef<HTMLElement>(null);
 
   useSectionReveal(sectionRef, {
+    debugId: "categories",
     onEnter: (root) => {
       const isLg = window.matchMedia("(min-width: 1024px)").matches;
       const tiles = root.querySelectorAll(
@@ -142,15 +225,15 @@ export function CategoriesSection() {
             data-split-animate="words"
             className="mt-6 font-heading text-3xl text-allure-petrol sm:text-4xl lg:text-5xl dark:text-allure-sand"
           >
-            Allure, en images
+            Habiter Allure
           </h2>
           <p
             data-split="lines,words"
             data-split-animate="words"
             className="mt-4 font-sans text-sm text-allure-ink/55 dark:text-allure-sand/55"
           >
-            Une mosaïque du projet — architecture, cadre de vie et emplacement
-            aux Almadies.
+            Une mosaïque des appartements témoins — salons, chambres, cuisines et
+            salles de bain, tels qu’ils se vivent.
           </p>
         </div>
 
@@ -180,6 +263,31 @@ export function CategoriesSection() {
               ))}
             </div>
           ))}
+        </div>
+
+        <div
+          data-reveal="item"
+          className="mx-auto mt-14 max-w-xl text-center lg:mt-20"
+        >
+          <p className="font-sans text-sm text-allure-ink/55 dark:text-allure-sand/55">
+            Ces vues sont celles de nos appartements témoins — visitez-les en
+            images, puis sur place.
+          </p>
+          <HomeCtaRow
+            className="mt-6"
+            primary={{
+              label: "Visiter les témoins",
+              href: "/appartements-temoins",
+            }}
+            secondary={{
+              label: "Planifier une visite",
+              href: "/rendez-vous",
+            }}
+            tertiary={{
+              label: "Voir les typologies",
+              href: "/#appartements",
+            }}
+          />
         </div>
       </div>
     </section>

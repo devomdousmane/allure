@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { Button } from "@/components/ui/button";
 import type { ApartmentDetail } from "@/data/apartments/types";
 import { formatSurface, shortApartmentName } from "@/data/apartments/format";
+import { useCookieConsentOptional } from "@/components/legal/cookie-consent-provider";
 
 type ApartmentStickyCtaProps = {
   apartment: ApartmentDetail;
@@ -16,6 +17,7 @@ type ApartmentStickyCtaProps = {
 // tout début ou en tout bas.
 export function ApartmentStickyCta({ apartment }: ApartmentStickyCtaProps) {
   const [visible, setVisible] = useState(false);
+  const cookies = useCookieConsentOptional();
 
   useEffect(() => {
     const hero = document.querySelector("section");
@@ -33,7 +35,7 @@ export function ApartmentStickyCta({ apartment }: ApartmentStickyCtaProps) {
 
   return (
     <AnimatePresence>
-      {visible && (
+      {visible && !cookies?.bannerVisible && (
         <motion.div
           initial={{ y: 80, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -54,13 +56,22 @@ export function ApartmentStickyCta({ apartment }: ApartmentStickyCtaProps) {
                 </span>
               </p>
             </div>
-            <Button
-              asChild
-              size="lg"
-              className="h-11 shrink-0 rounded-full bg-allure-petrol text-white hover:bg-allure-petrol-deep dark:bg-allure-gold dark:text-allure-petrol-deep dark:hover:bg-allure-gold/90"
-            >
-              <Link href="/contact">Planifier une visite</Link>
-            </Button>
+            <div className="flex shrink-0 items-center gap-2">
+              <Button
+                asChild
+                size="lg"
+                variant="outline"
+                className="border-allure-petrol/20 dark:border-allure-sand/25"
+              >
+                <Link href="/brochure">Brochure</Link>
+              </Button>
+              <Button asChild size="lg" className="btn-cta">
+                <Link href={`/rendez-vous?interest=${apartment.slug}`}>
+                  <span className="sm:hidden">Visite</span>
+                  <span className="hidden sm:inline">Planifier une visite</span>
+                </Link>
+              </Button>
+            </div>
           </div>
         </motion.div>
       )}

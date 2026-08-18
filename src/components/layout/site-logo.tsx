@@ -10,68 +10,67 @@ type SiteLogoProps = {
   priority?: boolean;
   href?: string | null;
   /**
-   * Force la version claire (argentée) — utile sur hero sombre
+   * Force la version sombre (argentée) — utile sur hero sombre
    * avant le scroll, quel que soit le thème.
    */
   inverted?: boolean;
 };
 
-const LOGO_ASPECT = 890 / 827;
+/** Lockups carrés — padding interne JPEG d’origine */
+const LOGO_ASPECT = 1;
+/** Zoom pour densifier le monogramme dans le header */
+const LOGO_CROP_SCALE = 1.35;
 
 /**
- * Logo Allure — assombri en thème clair, argenté en thème sombre.
+ * Logo Allure — WebP transparent (clair / sombre), s’adapte au thème.
  */
 export function SiteLogo({
   className,
-  height = 40,
+  height = 56,
   priority = false,
   href = "/",
   inverted = false,
 }: SiteLogoProps) {
   const width = Math.round(height * LOGO_ASPECT);
+  const imgSize = Math.round(height * LOGO_CROP_SCALE);
 
   const image = (
-    <>
-      {/* Version sombre : thèmes clairs (sauf inverted) */}
+    <span
+      className="relative block overflow-hidden"
+      style={{ height, width }}
+    >
       <Image
-        src={SITE.logo}
+        src={SITE.logoLight}
         alt={SITE.name}
-        width={width}
-        height={height}
+        width={imgSize}
+        height={imgSize}
         priority={priority}
         className={cn(
-          "h-full w-auto",
+          "absolute left-1/2 top-1/2 max-w-none -translate-x-1/2 -translate-y-1/2 object-contain",
           inverted ? "hidden" : "dark:hidden"
         )}
-        style={{
-          filter: "brightness(0) saturate(100%)",
-          opacity: 0.9,
-        }}
+        style={{ width: imgSize, height: imgSize }}
       />
-      {/* Version claire / argentée */}
       <Image
-        src={SITE.logo}
+        src={SITE.logoDark}
         alt=""
-        width={width}
-        height={height}
+        width={imgSize}
+        height={imgSize}
         aria-hidden
         priority={priority}
         className={cn(
-          "h-full w-auto",
+          "absolute left-1/2 top-1/2 max-w-none -translate-x-1/2 -translate-y-1/2 object-contain",
           inverted ? "block" : "hidden dark:block"
         )}
+        style={{ width: imgSize, height: imgSize }}
       />
-    </>
+    </span>
   );
 
   const classes = cn("inline-flex shrink-0 items-center", className);
 
   if (href === null) {
-    return (
-      <span className={classes} style={{ height }}>
-        {image}
-      </span>
-    );
+    return <span className={classes}>{image}</span>;
   }
 
   return (
@@ -79,7 +78,6 @@ export function SiteLogo({
       href={href}
       aria-label={`${SITE.name} — Accueil`}
       className={classes}
-      style={{ height }}
     >
       {image}
     </Link>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import Image from "next/image";
+import { MediaImage } from "@/components/ui/media-image";
 import Link from "next/link";
 import {
   Bookmark,
@@ -13,11 +13,13 @@ import {
   User,
 } from "lucide-react";
 import { SITE } from "@/lib/site";
+import { TEMOIN_MEDIA } from "@/lib/media";
+import { HeroExitFade, SectionSeam, SEAM } from "@/components/ui/section-seam";
 import { useSectionReveal } from "@/hooks/use-section-reveal";
 
 export function ServicesSection() {
   const sectionRef = useRef<HTMLElement>(null);
-  useSectionReveal(sectionRef);
+  useSectionReveal(sectionRef, { debugId: "services" });
 
   return (
     <section
@@ -26,15 +28,29 @@ export function ServicesSection() {
       className="relative overflow-hidden bg-white py-24 lg:py-32 dark:bg-allure-petrol-deep"
     >
       <div className="pointer-events-none absolute inset-0">
-        <Image
-          src="/Allure/HD_139.webp"
+        <MediaImage
+          src={TEMOIN_MEDIA.salon3}
           alt=""
           fill
           sizes="100vw"
+          loaderSize="md"
           className="object-cover object-center"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-white via-white/55 to-white dark:from-allure-petrol-deep dark:via-allure-petrol-deep/80 dark:to-allure-petrol-deep" />
+        >
+          <div className="absolute inset-0 bg-gradient-to-b from-white via-white/55 to-white dark:from-allure-petrol-deep dark:via-allure-petrol-deep/80 dark:to-allure-petrol-deep" />
+        </MediaImage>
       </div>
+
+      {/* Sortie → chantier : blanc en clair (pas de bande pétrole), pétrole en sombre */}
+      <SectionSeam
+        edges="top"
+        from={SEAM.white}
+        fromDark={SEAM.petrolDeep}
+      />
+      <HeroExitFade
+        to={SEAM.white}
+        toDark={SEAM.petrolDeep}
+        className="h-[28%] min-h-28 sm:min-h-36"
+      />
 
       <div className="pointer-events-none absolute inset-x-0 top-0 z-[1] mx-auto flex h-72 max-w-6xl justify-between px-6">
         <span className="h-full w-px bg-gradient-to-b from-allure-petrol/25 to-transparent dark:from-white/20" />
@@ -83,8 +99,8 @@ export function ServicesSection() {
               </span>
             </div>
             <Link
-              href="/contact"
-              className="btn-3d relative flex items-center justify-center rounded-xl bg-allure-petrol py-4 hover:bg-allure-petrol-deep dark:btn-3d-gold dark:bg-allure-gold dark:hover:bg-allure-gold/90"
+              href="/rendez-vous"
+              className="btn-cta relative h-auto min-h-11 py-4"
             >
               <span className="inline-flex items-center gap-2 font-sans text-sm font-medium text-white dark:text-allure-petrol-deep">
                 <Calendar className="h-4 w-4" />
@@ -111,11 +127,12 @@ export function ServicesSection() {
             className="relative flex flex-col justify-between gap-6 overflow-hidden rounded-2xl border border-allure-petrol/10 bg-white p-6 shadow-sm md:row-span-2 dark:border-allure-sand/10 dark:bg-allure-petrol-deep"
           >
             <div className="relative overflow-hidden rounded-xl">
-              <Image
-                src="/hero-sequence/frame_012.webp"
+              <MediaImage
+                src={TEMOIN_MEDIA.chambre1}
                 alt=""
                 fill
                 sizes="400px"
+                loaderSize="sm"
                 className="object-cover blur-md"
               />
               <div className="absolute inset-0 bg-allure-petrol-deep/75" />
@@ -159,11 +176,12 @@ export function ServicesSection() {
             href="/avancement"
             className="relative flex min-h-[220px] flex-col justify-between gap-6 overflow-hidden rounded-2xl p-6 shadow-sm transition-opacity hover:opacity-95"
           >
-            <Image
-              src="/hero-sequence/frame_024.webp"
+            <MediaImage
+              src={TEMOIN_MEDIA.salon5}
               alt=""
               fill
               sizes="400px"
+              loaderSize="sm"
               className="object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-br from-allure-petrol/80 to-allure-petrol-deep/90" />
@@ -177,7 +195,7 @@ export function ServicesSection() {
                     Suivi de chantier
                   </p>
                   <p className="font-sans text-[11px] text-white/60">
-                    Voir l&rsquo;avancement
+                    Timeline &amp; journal
                   </p>
                 </div>
               </div>
@@ -191,8 +209,8 @@ export function ServicesSection() {
                 Chantier suivi en photos
               </h3>
               <p className="mt-1 font-sans text-sm text-white/70">
-                Un état d&rsquo;avancement régulier, partagé avec chaque
-                acquéreur, pour suivre le projet en toute transparence.
+                Timeline photos et journal feuilletable — le chantier partagé
+                avec chaque acquéreur, en toute transparence.
               </p>
             </div>
           </Link>
@@ -203,7 +221,7 @@ export function ServicesSection() {
             className="relative flex flex-col justify-between gap-6 rounded-2xl border border-allure-petrol/10 bg-white p-6 shadow-sm transition-colors hover:border-allure-gold/40 dark:border-allure-sand/10 dark:bg-allure-petrol-deep"
           >
             <div className="flex items-center gap-3 rounded-xl border border-allure-petrol/10 bg-allure-sand p-3 dark:border-allure-sand/10 dark:bg-white/5">
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-allure-petrol text-white dark:bg-allure-gold dark:text-allure-petrol-deep">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-allure-gold text-allure-petrol-deep">
                 <User className="h-4 w-4" />
               </span>
               <div>

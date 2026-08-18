@@ -1,7 +1,9 @@
-import Image from "next/image";
+import { MediaImage } from "@/components/ui/media-image";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { HeroExitFade } from "@/components/ui/section-seam";
+import { SectionSharp, SHARP } from "@/components/ui/section-sharp";
 import type { ApartmentDetail } from "@/data/apartments/types";
 import {
   formatSurface,
@@ -10,25 +12,44 @@ import {
 
 type ApartmentHeroProps = {
   apartment: ApartmentDetail;
+  /** Couleur de la section suivante (fill du sharp bas) */
+  sharpTo?: string;
+  sharpToDark?: string;
+  sharpVariant?: "chevron" | "angle" | "fold";
 };
 
-export function ApartmentHero({ apartment }: ApartmentHeroProps) {
+export function ApartmentHero({
+  apartment,
+  sharpTo = SHARP.white,
+  sharpToDark = SHARP.petrolDeep,
+  sharpVariant = "fold",
+}: ApartmentHeroProps) {
   const shortName = shortApartmentName(apartment.name);
 
   return (
-    <section className="relative flex min-h-[min(88vh,720px)] items-end overflow-hidden pb-10 pt-28 sm:pb-14 sm:pt-32 lg:min-h-[78vh] lg:pb-16">
-      <Image
+    <section className="relative flex min-h-[min(88vh,720px)] items-end overflow-hidden pb-16 pt-28 sm:pb-20 sm:pt-32 lg:min-h-[78vh] lg:pb-24">
+      <MediaImage
         src={apartment.heroImage}
         alt=""
         fill
         priority
         sizes="100vw"
+        loaderTone="gold"
+        loaderSize="md"
         className="object-cover object-center"
+      >
+        <div className="absolute inset-0 bg-gradient-to-t from-allure-petrol-deep via-allure-petrol-deep/55 to-allure-petrol/20" />
+        <div className="absolute inset-0 bg-gradient-to-r from-allure-petrol-deep/40 via-transparent to-transparent" />
+      </MediaImage>
+      <HeroExitFade to={sharpTo} toDark={sharpToDark} />
+      <SectionSharp
+        edge="bottom"
+        fill={sharpTo}
+        fillDark={sharpToDark}
+        variant={sharpVariant}
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-allure-petrol-deep via-allure-petrol-deep/55 to-allure-petrol/20" />
-      <div className="absolute inset-0 bg-gradient-to-r from-allure-petrol-deep/40 via-transparent to-transparent" />
 
-      <div className="relative mx-auto w-full max-w-6xl px-5 sm:px-6">
+      <div className="relative z-[2] mx-auto w-full max-w-6xl px-5 sm:px-6">
         <Link
           href="/les-appartements"
           className="inline-flex items-center gap-1.5 font-sans text-xs uppercase tracking-[0.2em] text-white/55 transition-colors hover:text-allure-gold"
@@ -77,25 +98,31 @@ export function ApartmentHero({ apartment }: ApartmentHeroProps) {
           <Button
             asChild
             size="lg"
-            className="h-12 w-full rounded-full bg-allure-gold text-allure-petrol-deep hover:bg-allure-gold/90 sm:w-auto"
+            className="w-full bg-allure-gold text-allure-petrol-deep hover:bg-allure-gold/90 sm:w-auto"
           >
-            <Link href="/contact">Planifier une visite</Link>
+            <Link href={`/rendez-vous?interest=${apartment.slug}`}>
+              Planifier une visite
+            </Link>
           </Button>
           <Button
             asChild
             size="lg"
             variant="outline"
-            className="h-12 w-full rounded-full border-white/35 bg-transparent text-white hover:bg-white/10 hover:text-white sm:w-auto"
+            className="w-full border-white/35 bg-transparent text-white hover:bg-white/10 hover:text-white sm:w-auto"
           >
-            <a
-              href={apartment.brochure}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Brochure PDF
-            </a>
+            <Link href="/brochure">Feuilleter la brochure</Link>
           </Button>
         </div>
+        <p className="mt-4 font-sans text-xs text-white/50">
+          <a
+            href={apartment.brochure}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline-offset-4 transition hover:text-allure-gold hover:underline"
+          >
+            Télécharger le PDF
+          </a>
+        </p>
       </div>
     </section>
   );

@@ -31,4 +31,10 @@ export const PARTNERS: Partner[] = [
     role: "Économie de la construction",
     logo: "/partenaire/UNTEC-150x150.webp",
   },
+  {
+    id: "vytimo",
+    name: "Vytimo Listing",
+    role: "Listing immobilier",
+    logo: "/partenaire/vytimo-listing.webp",
+  },
 ];

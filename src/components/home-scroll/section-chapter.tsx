@@ -97,10 +97,10 @@ export function SectionChapter({
             <span className="font-sans text-[10px] uppercase tracking-[0.35em] text-allure-gold">
               {index}
             </span>
-            <span className="max-w-[3.5rem] font-heading text-xs leading-tight text-allure-petrol/35 dark:text-allure-sand/30">
+            <span className="max-w-[3.5rem] font-heading text-xs leading-tight text-allure-petrol/60 dark:text-allure-sand/45">
               {label}
             </span>
-            <div className="mt-2 h-14 w-px overflow-hidden bg-allure-petrol/10 dark:bg-allure-sand/10">
+            <div className="mt-2 h-14 w-px overflow-hidden bg-allure-petrol/20 dark:bg-allure-sand/15">
               <div
                 ref={progressRef}
                 className="h-full w-full origin-top bg-allure-gold will-change-transform"

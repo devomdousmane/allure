@@ -13,7 +13,7 @@ import { useSectionReveal } from "@/hooks/use-section-reveal";
 
 export function FaqSection() {
   const sectionRef = useRef<HTMLElement>(null);
-  useSectionReveal(sectionRef);
+  useSectionReveal(sectionRef, { debugId: "faq" });
 
   return (
     <section
@@ -21,7 +21,11 @@ export function FaqSection() {
       id="faq"
       className="relative bg-white py-24 lg:py-32 dark:bg-allure-petrol-deep"
     >
-      <SectionSeam from={SEAM.sand} fromDark={SEAM.petrol} />
+      <SectionSeam
+        edges="top"
+        from={SEAM.white}
+        fromDark={SEAM.petrolDeep}
+      />
       <div className="relative z-[2] mx-auto max-w-3xl px-6">
         <div className="mb-14 text-center">
           <p

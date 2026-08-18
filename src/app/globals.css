@@ -55,11 +55,15 @@
 }
 
 :root {
-  /* Palette de marque Résidence Allure, extraite du site actuel */
+  /* Palette de marque Résidence Allure */
   --allure-petrol: oklch(0.390 0.058 227.4); /* #1E4B5D */
   --allure-petrol-deep: oklch(0.329 0.048 226.6); /* #163a48 */
   --allure-slate: oklch(0.418 0.047 225.6); /* #2F5260 */
-  --allure-gold: oklch(0.821 0.080 79.6); /* #E0BF89 */
+  /* Or clair (sombre / overlays) — trop pâle sur sable */
+  --allure-gold-bright: lab(79 6.76 31.87);
+  /* Or lisible en thème clair (contraste sur sable / blanc) */
+  --allure-gold: oklch(0.48 0.095 78);
+  --allure-btn-shadow: color-mix(in oklab, var(--allure-gold) 48%, #2a2110);
   --allure-sand: oklch(0.968 0.009 84.6); /* #F7F4EE */
   --allure-ink: oklch(0.325 0 89.9); /* #343434 */
   --allure-white: #ffffff;
@@ -105,8 +109,16 @@
   --card-foreground: oklch(0.96 0.01 84.6);
   --popover: var(--allure-petrol);
   --popover-foreground: oklch(0.96 0.01 84.6);
-  --primary: var(--allure-gold);
-  --primary-foreground: var(--allure-petrol-deep);
+  /* Or lumineux sur fonds sombres */
+  --allure-gold: var(--allure-gold-bright);
+  /* Or adouci pour boutons / primary (moins vif qu’en plein) */
+  --allure-gold-btn: color-mix(
+    in oklab,
+    var(--allure-gold) 72%,
+    var(--allure-petrol-deep)
+  );
+  --primary: var(--allure-gold-btn);
+  --primary-foreground: #fff;
   --secondary: oklch(0.35 0.045 226);
   --secondary-foreground: oklch(0.96 0.01 84.6);
   --muted: oklch(0.35 0.045 226);
@@ -130,6 +142,25 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+  color-scheme: dark;
+}
+
+/* Selects natifs : évite blanc-sur-blanc dans le menu déroulant (Windows) */
+.dark select,
+.dark select option,
+.dark input[type="date"] {
+  color-scheme: dark;
+}
+
+.dark select option {
+  background-color: var(--allure-petrol-deep);
+  color: var(--allure-sand);
+}
+
+/* Plans SVG embarqués (<object>) — pas de fond blanc en thème sombre */
+object[type="image/svg+xml"] {
+  background-color: transparent !important;
+  color-scheme: only light;
 }
 
 @layer base {
@@ -141,6 +172,14 @@
   }
   html {
     @apply font-sans;
+    scroll-padding-top: 5.5rem;
+  }
+  [id] {
+    scroll-margin-top: 5.5rem;
+  }
+  html.has-custom-cursor,
+  html.has-custom-cursor * {
+    cursor: none !important;
   }
 }
 
@@ -155,7 +194,31 @@
     var(--animation-direction, forwards) linear infinite;
 }
 
-/* SplitType line masks + word/char units */
+/* Partenaires — marquee GPU (transform only) */
+@keyframes partners-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.partners-marquee-track {
+  transform: translate3d(0, 0, 0);
+}
+
+.partners-marquee-track--run {
+  animation: partners-marquee 42s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .partners-marquee-track--run {
+    animation: none;
+  }
+}
+
+/* SplitText line masks + word/char units */
 .split-line {
   display: block;
   overflow: hidden;
@@ -179,12 +242,15 @@
 }
 
 
-/* Boutons / CTA — relief 3D discret (presse au clic) */
+/* Boutons / CTA — relief 3D marqué (presse au clic) */
 @layer components {
-  .btn-3d {
-    --btn-3d-depth: var(--allure-petrol-deep);
-    --btn-3d-highlight: rgb(255 255 255 / 0.22);
+  .btn-3d,
+  .btn-cta,
+  .btn-cta-outline {
+    --btn-3d-depth: var(--allure-btn-shadow);
+    --btn-3d-highlight: rgb(255 255 255 / 0.28);
     position: relative;
+    border-radius: 9999px;
     transform: translate3d(0, 0, 0);
     transition:
       transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
@@ -194,46 +260,129 @@
       color 0.18s ease;
     box-shadow:
       inset 0 1px 0 0 var(--btn-3d-highlight),
-      0 1px 0 0 rgb(0 0 0 / 0.05),
-      0 4px 0 0 var(--btn-3d-depth),
-      0 8px 16px -6px rgb(0 0 0 / 0.22);
+      inset 0 -1px 0 0 rgb(0 0 0 / 0.12),
+      0 1px 0 0 rgb(0 0 0 / 0.08),
+      0 7px 0 0 var(--btn-3d-depth),
+      0 14px 28px -8px rgb(0 0 0 / 0.38);
   }
 
-  .btn-3d:hover {
-    transform: translate3d(0, -2px, 0);
-    box-shadow:
-      inset 0 1px 0 0 rgb(255 255 255 / 0.3),
-      0 1px 0 0 rgb(0 0 0 / 0.05),
-      0 6px 0 0 var(--btn-3d-depth),
-      0 12px 22px -6px rgb(0 0 0 / 0.26);
+  :root:not(.dark) .btn-3d,
+  :root:not(.dark) .btn-cta,
+  :root:not(.dark) .btn-cta-outline,
+  :root:not(.dark) .btn-3d-gold {
+    --btn-3d-depth: var(--allure-btn-shadow);
   }
 
-  .btn-3d:active {
-    transform: translate3d(0, 3px, 0);
+  :root:not(.dark) .btn-3d-outline,
+  :root:not(.dark) .btn-cta-outline {
+    --btn-3d-depth: color-mix(in oklab, var(--allure-petrol) 55%, #0f1c22);
+    --btn-3d-highlight: rgb(255 255 255 / 0.55);
+  }
+
+  .btn-3d:hover,
+  .btn-cta:hover,
+  .btn-cta-outline:hover {
+    transform: translate3d(0, -3px, 0);
     box-shadow:
-      inset 0 1px 0 0 rgb(255 255 255 / 0.1),
+      inset 0 1px 0 0 rgb(255 255 255 / 0.35),
+      inset 0 -1px 0 0 rgb(0 0 0 / 0.1),
+      0 1px 0 0 rgb(0 0 0 / 0.08),
+      0 10px 0 0 var(--btn-3d-depth),
+      0 20px 36px -10px rgb(0 0 0 / 0.42);
+  }
+
+  .btn-3d:active,
+  .btn-cta:active,
+  .btn-cta-outline:active {
+    transform: translate3d(0, 4px, 0);
+    box-shadow:
+      inset 0 1px 0 0 rgb(255 255 255 / 0.12),
+      inset 0 2px 4px 0 rgb(0 0 0 / 0.18),
       0 0 0 0 transparent,
-      0 1px 0 0 var(--btn-3d-depth),
-      0 3px 8px -4px rgb(0 0 0 / 0.18);
+      0 2px 0 0 var(--btn-3d-depth),
+      0 4px 10px -4px rgb(0 0 0 / 0.28);
   }
 
   .btn-3d-gold {
-    --btn-3d-depth: color-mix(in oklab, var(--allure-gold) 55%, #5c4a28);
-    --btn-3d-highlight: rgb(255 255 255 / 0.35);
+    --btn-3d-highlight: rgb(255 255 255 / 0.4);
   }
 
   .btn-3d-outline {
-    --btn-3d-depth: color-mix(in oklab, var(--allure-petrol) 35%, transparent);
-    --btn-3d-highlight: rgb(255 255 255 / 0.5);
+    --btn-3d-highlight: rgb(255 255 255 / 0.55);
+  }
+
+  /* CTA — forme capsule (pill) ; couleurs inchangées */
+  .btn-cta,
+  .btn-cta-outline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 2.5rem;
+    padding-inline: 1.35rem;
+    border-radius: 9999px;
+  }
+
+  @media (min-width: 640px) {
+    .btn-cta,
+    .btn-cta-outline {
+      height: 2.75rem;
+      padding-inline: 1.65rem;
+    }
+  }
+
+  .btn-cta {
+    background-color: var(--allure-petrol);
+    color: var(--allure-white);
+  }
+
+  .btn-cta:hover {
+    background-color: var(--allure-petrol-deep);
+  }
+
+  .btn-cta-outline {
+    border: 1px solid color-mix(in oklab, var(--allure-petrol) 25%, transparent);
+    background-color: rgb(255 255 255 / 0.7);
+    color: var(--allure-petrol);
+    backdrop-filter: blur(4px);
+  }
+
+  .btn-cta-outline:hover {
+    background-color: rgb(255 255 255 / 1);
+  }
+
+  .dark .btn-cta {
+    --btn-3d-depth: color-mix(in oklab, var(--allure-gold-btn) 30%, #1a1408);
+    background-color: var(--allure-gold-btn);
+    color: #fff;
+  }
+
+  .dark .btn-cta:hover {
+    background-color: color-mix(
+      in oklab,
+      var(--allure-gold) 58%,
+      var(--allure-petrol-deep)
+    );
+    color: #fff;
+  }
+
+  .dark .btn-cta-outline {
+    --btn-3d-depth: color-mix(in oklab, var(--allure-sand) 40%, #000);
+    border-color: color-mix(in oklab, var(--allure-sand) 30%, transparent);
+    background-color: color-mix(in oklab, var(--allure-petrol-deep) 50%, transparent);
+    color: #fff;
+  }
+
+  .dark .btn-cta-outline:hover {
+    background-color: color-mix(in oklab, var(--allure-petrol-deep) 80%, transparent);
   }
 
   .dark .btn-3d-outline {
-    --btn-3d-depth: color-mix(in oklab, var(--allure-sand) 28%, transparent);
-    --btn-3d-highlight: rgb(255 255 255 / 0.08);
+    --btn-3d-depth: color-mix(in oklab, var(--allure-sand) 45%, #000);
+    --btn-3d-highlight: rgb(255 255 255 / 0.12);
   }
 
   .dark .btn-3d:not(.btn-3d-outline) {
-    --btn-3d-depth: color-mix(in oklab, var(--allure-gold) 50%, #4a3a1f);
+    --btn-3d-depth: color-mix(in oklab, var(--allure-gold-btn) 35%, #1a1408);
     --btn-3d-highlight: rgb(255 255 255 / 0.28);
   }
 
@@ -250,9 +399,119 @@
   @media (prefers-reduced-motion: reduce) {
     .btn-3d,
     .btn-3d:hover,
-    .btn-3d:active {
+    .btn-3d:active,
+    .btn-cta,
+    .btn-cta:hover,
+    .btn-cta:active,
+    .btn-cta-outline,
+    .btn-cta-outline:hover,
+    .btn-cta-outline:active {
       transition: none;
       transform: none;
     }
   }
 }
+
+/* ——— Transition thème clair ↔ sombre (cercle depuis le toggle) ——— */
+@supports (view-transition-name: root) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+  }
+
+  ::view-transition-old(root) {
+    z-index: 1;
+  }
+
+  ::view-transition-new(root) {
+    z-index: 9999;
+    animation: theme-vt-circle 0.58s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  @keyframes theme-vt-circle {
+    from {
+      clip-path: circle(0px at var(--theme-vt-x, 50%) var(--theme-vt-y, 50%));
+    }
+    to {
+      clip-path: circle(
+        var(--theme-vt-r, 100vmax) at var(--theme-vt-x, 50%)
+          var(--theme-vt-y, 50%)
+      );
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+      animation: none !important;
+    }
+  }
+}
+
+/* Icônes interactives du chrome (hover léger, sans layout shift) */
+.site-icon {
+  transition:
+    color 0.25s ease,
+    background-color 0.25s ease,
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.site-icon svg {
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .site-icon:hover {
+    transform: translateY(-1px);
+  }
+
+  .site-icon:hover svg {
+    transform: scale(1.08);
+  }
+
+  .site-icon:active {
+    transform: translateY(0);
+  }
+
+  .site-icon:active svg {
+    transform: scale(0.94);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-icon,
+  .site-icon svg {
+    transition: color 0.2s ease, background-color 0.2s ease;
+  }
+}
+
+/* Scroll partout : molette / trackpad / clavier, curseur navigateur masqué. */
+html,
+body,
+.hide-native-scrollbar,
+.hide-native-scrollbar body {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+.hide-native-scrollbar::-webkit-scrollbar,
+.hide-native-scrollbar body::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+

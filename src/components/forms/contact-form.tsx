@@ -14,7 +14,7 @@ type ContactFormProps = {
 type Status = "idle" | "loading" | "success" | "error";
 
 const fieldClass =
-  "border-allure-petrol/15 bg-allure-sand text-allure-ink placeholder:text-allure-ink/40 dark:border-white/15 dark:bg-white/5 dark:text-white dark:placeholder:text-white/40";
+  "border-allure-petrol/15 bg-allure-sand text-allure-ink placeholder:text-allure-ink/40 [color-scheme:light] dark:border-white/15 dark:bg-allure-petrol-deep dark:text-allure-sand dark:placeholder:text-allure-sand/40 dark:[color-scheme:dark]";
 
 export function ContactForm({ className, source = "website" }: ContactFormProps) {
   const [status, setStatus] = useState<Status>("idle");
@@ -136,7 +136,7 @@ export function ContactForm({ className, source = "website" }: ContactFormProps)
         type="submit"
         size="lg"
         disabled={status === "loading"}
-        className="mt-2 rounded-full bg-allure-petrol text-white hover:bg-allure-petrol-deep dark:bg-white dark:text-allure-petrol-deep dark:hover:bg-white/90"
+        className="btn-cta mt-2"
       >
         {status === "loading" ? "Envoi…" : "Envoyer"}
       </Button>

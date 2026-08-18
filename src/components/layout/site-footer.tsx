@@ -1,18 +1,19 @@
 "use client";
 
 import { useState, type FormEvent, type SVGProps } from "react";
-import Image from "next/image";
+import { MediaImage } from "@/components/ui/media-image";
 import Link from "next/link";
 import { motion } from "motion/react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { SectionSeam, SEAM } from "@/components/ui/section-seam";
-import { NAV_LINKS } from "@/lib/nav";
+import { NAV_LINKS, BOOK_LINKS, HOME_ANCHORS } from "@/lib/nav";
+import { LEGAL_LINKS } from "@/lib/legal";
 import { SITE } from "@/lib/site";
+import { useCookieConsentOptional } from "@/components/legal/cookie-consent-provider";
 
 /** Ciel / nuages — ton doux aligné pétrole & or Allure */
-const FOOTER_BG =
-  "https://images.unsplash.com/photo-1534088568595-a066f410bcda?w=1920&q=80";
+const FOOTER_BG = "/Allure/DJI_0250.webp";
 
 function FacebookIcon(props: SVGProps<SVGSVGElement>) {
   return (
@@ -47,31 +48,66 @@ const SOCIAL_ICONS = {
 } as const;
 
 export function SiteFooter() {
-  const [status, setStatus] = useState<"idle" | "ok">("idle");
+  const cookies = useCookieConsentOptional();
+  const [status, setStatus] = useState<"idle" | "loading" | "ok" | "error">(
+    "idle"
+  );
+  const [errorMessage, setErrorMessage] = useState("");
 
-  function onSubmit(e: FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setStatus("ok");
-    e.currentTarget.reset();
+    setStatus("loading");
+    setErrorMessage("");
+
+    const form = e.currentTarget;
+    const data = new FormData(form);
+    const email = String(data.get("email") ?? "").trim();
+    const company = String(data.get("company") ?? "").trim();
+
+    try {
+      const res = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, company }),
+      });
+      if (!res.ok) {
+        const json = (await res.json().catch(() => ({}))) as { error?: string };
+        setStatus("error");
+        setErrorMessage(
+          json.error ?? "Impossible d’enregistrer votre email. Réessayez."
+        );
+        return;
+      }
+      setStatus("ok");
+      form.reset();
+    } catch {
+      setStatus("error");
+      setErrorMessage("Vérifiez votre connexion, puis réessayez.");
+    }
   }
 
   return (
     <footer className="relative overflow-hidden">
-      <Image
+      <MediaImage
         src={FOOTER_BG}
         alt=""
         fill
         sizes="100vw"
+        loaderSize="md"
         className="object-cover object-center"
         priority={false}
+      >
+        {/* Clair : voile sable translucide — sombre : pétrole profond */}
+        <div className="absolute inset-0 bg-allure-sand/88 dark:hidden" />
+        <div className="absolute inset-0 hidden bg-allure-petrol-deep/90 dark:block" />
+        <div className="absolute inset-0 bg-gradient-to-b from-allure-sand/50 via-transparent to-allure-sand dark:from-allure-petrol-deep/60 dark:via-transparent dark:to-black/50" />
+      </MediaImage>
+
+      <SectionSeam
+        edges="top"
+        from={SEAM.white}
+        fromDark={SEAM.petrolDeep}
       />
-
-      {/* Clair : voile sable translucide — sombre : pétrole profond */}
-      <div className="absolute inset-0 bg-allure-sand/88 dark:hidden" />
-      <div className="absolute inset-0 hidden bg-allure-petrol-deep/90 dark:block" />
-      <div className="absolute inset-0 bg-gradient-to-b from-allure-sand/50 via-transparent to-allure-sand dark:from-allure-petrol-deep/60 dark:via-transparent dark:to-black/50" />
-
-      <SectionSeam from={SEAM.white} fromDark={SEAM.petrolDeep} />
 
       <div className="relative z-[2]">
         {/* Newsletter */}
@@ -97,19 +133,29 @@ export function SiteFooter() {
               onSubmit={onSubmit}
               className="mx-auto mt-8 flex max-w-md flex-col gap-3 sm:flex-row"
             >
+              <input
+                type="text"
+                name="company"
+                tabIndex={-1}
+                autoComplete="off"
+                className="absolute -left-[9999px] h-0 w-0 opacity-0"
+                aria-hidden
+              />
               <Input
                 type="email"
                 name="email"
                 required
                 placeholder="Votre email"
-                className="h-12 border-allure-petrol/15 bg-white text-allure-ink placeholder:text-allure-ink/40 dark:border-allure-sand/20 dark:bg-white/10 dark:text-allure-sand dark:placeholder:text-allure-sand/40"
+                disabled={status === "loading"}
+                className="border-allure-petrol/15 bg-white text-allure-ink placeholder:text-allure-ink/40 dark:border-allure-sand/20 dark:bg-white/10 dark:text-allure-sand dark:placeholder:text-allure-sand/40"
               />
               <Button
                 type="submit"
                 size="lg"
-                className="h-12 shrink-0 rounded-full bg-allure-petrol text-white hover:bg-allure-petrol-deep dark:bg-allure-gold dark:text-allure-petrol-deep dark:hover:bg-allure-gold/90"
+                disabled={status === "loading"}
+                className="btn-cta shrink-0"
               >
-                S&rsquo;inscrire
+                {status === "loading" ? "Envoi…" : "S’inscrire"}
               </Button>
             </form>
             {status === "ok" && (
@@ -117,12 +163,17 @@ export function SiteFooter() {
                 Merci — nous vous tiendrons informé.
               </p>
             )}
+            {status === "error" && (
+              <p className="mt-3 font-sans text-xs text-red-700 dark:text-red-300">
+                {errorMessage}
+              </p>
+            )}
           </motion.div>
         </div>
 
         {/* Liens & contact */}
         <div className="mx-auto max-w-6xl border-t border-allure-petrol/10 px-6 py-14 dark:border-allure-sand/10">
-          <div className="grid grid-cols-1 gap-12 text-center sm:grid-cols-3 sm:text-left">
+          <div className="grid grid-cols-1 gap-12 text-center sm:grid-cols-2 lg:grid-cols-4 sm:text-left">
             <div className="flex flex-col items-center sm:items-start">
               <p className="font-heading text-lg tracking-[0.15em] text-allure-petrol dark:text-allure-sand">
                 ALLURE
@@ -139,6 +190,24 @@ export function SiteFooter() {
               </p>
               <ul className="mt-4 flex flex-col items-center gap-3 sm:items-start">
                 {NAV_LINKS.map((link) => (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className="font-sans text-sm text-allure-ink/70 transition-colors hover:text-allure-petrol dark:text-allure-sand/70 dark:hover:text-allure-gold"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="flex flex-col items-center sm:items-start">
+              <p className="font-sans text-xs uppercase tracking-[0.2em] text-allure-ink/40 dark:text-allure-sand/40">
+                Accueil
+              </p>
+              <ul className="mt-4 flex flex-col items-center gap-3 sm:items-start">
+                {HOME_ANCHORS.map((link) => (
                   <li key={link.href}>
                     <Link
                       href={link.href}
@@ -173,30 +242,85 @@ export function SiteFooter() {
                   </a>
                 </li>
               </ul>
-              <div className="mt-5 flex justify-center gap-4 sm:justify-start">
-                {SITE.socials.map((social) => {
+              <div className="mt-5 flex justify-center gap-3 sm:justify-start">
+                {SITE.socials.map((social, i) => {
                   const Icon =
                     SOCIAL_ICONS[social.label as keyof typeof SOCIAL_ICONS];
                   if (!Icon) return null;
                   return (
-                    <Link
+                    <motion.div
                       key={social.label}
-                      href={social.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label={social.label}
-                      className="text-allure-ink/45 transition-colors hover:text-allure-petrol dark:text-allure-sand/45 dark:hover:text-allure-gold"
+                      initial={{ opacity: 0, y: 8 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true, margin: "-40px" }}
+                      transition={{
+                        duration: 0.4,
+                        delay: 0.05 * i,
+                        ease: [0.22, 1, 0.36, 1],
+                      }}
                     >
-                      <Icon className="h-4 w-4" />
-                    </Link>
+                      <motion.a
+                        href={social.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={social.label}
+                        className="site-icon inline-flex size-9 items-center justify-center rounded-full text-allure-ink/45 hover:text-allure-petrol dark:text-allure-sand/45 dark:hover:text-allure-gold"
+                        whileHover={{ y: -2 }}
+                        whileTap={{ scale: 0.92 }}
+                        transition={{ duration: 0.25 }}
+                      >
+                        <Icon className="h-4 w-4" />
+                      </motion.a>
+                    </motion.div>
                   );
                 })}
               </div>
             </div>
           </div>
 
-          <div className="mt-14 border-t border-allure-petrol/10 pt-6 text-center font-sans text-xs text-allure-ink/40 dark:border-allure-sand/10 dark:text-allure-sand/40 sm:text-left">
-            © {new Date().getFullYear()} {SITE.name}. Tous droits réservés.
+          <div className="mt-14 flex flex-col gap-6 border-t border-allure-petrol/10 pt-6 dark:border-allure-sand/10 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-center font-sans text-xs text-allure-ink/40 dark:text-allure-sand/40 sm:text-left">
+              © {new Date().getFullYear()} {SITE.name}. Tous droits réservés.
+            </p>
+            <div className="flex flex-col items-center gap-3 sm:items-end">
+              <nav
+                aria-label="Documents"
+                className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 sm:justify-end"
+              >
+                {BOOK_LINKS.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className="font-sans text-xs font-medium text-allure-petrol/70 transition-colors hover:text-allure-gold dark:text-allure-sand/70 dark:hover:text-allure-gold"
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </nav>
+              <nav
+                aria-label="Informations légales"
+                className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 sm:justify-end"
+              >
+                {LEGAL_LINKS.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className="font-sans text-xs text-allure-ink/45 transition-colors hover:text-allure-petrol dark:text-allure-sand/45 dark:hover:text-allure-gold"
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+                {cookies ? (
+                  <button
+                    type="button"
+                    onClick={cookies.reopen}
+                    className="font-sans text-xs text-allure-ink/45 transition-colors hover:text-allure-petrol dark:text-allure-sand/45 dark:hover:text-allure-gold"
+                  >
+                    Gérer les cookies
+                  </button>
+                ) : null}
+              </nav>
+            </div>
           </div>
         </div>
 

@@ -48,7 +48,7 @@ export function AnnexVoicesMark() {
       <div className="absolute top-[16%] right-[6%] sm:right-[10%]">
         <div
           ref={markRef}
-          className="text-allure-petrol will-change-transform dark:text-allure-sand"
+          className="text-allure-petrol/35 will-change-transform dark:text-allure-sand/30"
         >
           <Quote className="size-[clamp(4rem,14vw,9rem)] stroke-[1]" />
         </div>

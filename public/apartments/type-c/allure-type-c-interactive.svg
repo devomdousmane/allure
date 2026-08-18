@@ -10,7 +10,6 @@
 
   <style>
     svg { background: transparent; }
-    #floorplan-image { pointer-events: none; }
     .room {
       cursor: pointer;
       outline: none;
@@ -39,11 +38,6 @@
       stroke-width: 5;
     }
   </style>
-
-  <image id="floorplan-image"
-         x="0" y="0" width="1536" height="891"
-         preserveAspectRatio="xMidYMid meet"
-         href="dimensions-plan-transparent.png" />
 
   <g id="interactive-rooms">
     

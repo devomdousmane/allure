@@ -13,7 +13,7 @@ export const FAQS = [
   },
   {
     q: "Peut-on visiter la résidence ou son chantier ?",
-    a: "Oui, des visites sont organisées sur rendez-vous. Utilisez le formulaire de contact ou appelez-nous directement pour planifier votre visite.",
+    a: "Oui, des visites sont organisées sur rendez-vous. Utilisez le formulaire Planifier un rendez-vous ou appelez-nous directement.",
   },
   {
     q: "Quelles prestations sont incluses ?",

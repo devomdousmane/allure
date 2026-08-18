@@ -31,6 +31,12 @@ export function ScrollProgress() {
         start: "top top",
         end: "bottom bottom",
         scrub: 0.35,
+        // Sans ceci, ce trigger garde en cache la hauteur du document
+        // mesurée à sa création — tout contenu chargé plus tard (vidéos,
+        // images) qui allonge la page laisse `end` trop court, donc la
+        // barre atteint 100% avant la vraie fin de page et reste figée
+        // (immobile en pleine largeur) sur le reste du scroll.
+        invalidateOnRefresh: true,
       },
     });
 

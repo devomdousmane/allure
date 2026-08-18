@@ -5,7 +5,6 @@ import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
 import { registerGsap } from "@/lib/gsap/register";
 import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
-import { splitForReveal } from "@/lib/gsap/split-text";
 
 registerGsap();
 
@@ -21,22 +20,14 @@ export function AnnexGalleryBridge() {
       const track = trackRef.current;
       if (!root || !track || reduced !== false) return;
 
-      const cleanups: Array<() => void> = [];
-
-      track.querySelectorAll<HTMLElement>("[data-bridge-label]").forEach((el) => {
-        const { targets, revert } = splitForReveal(el, {
-          types: "chars",
-          animate: "chars",
-        });
-        cleanups.push(revert);
-        if (!targets.length) return;
-
-        gsap.from(targets, {
-          yPercent: 110,
+      const labels = track.querySelectorAll<HTMLElement>("[data-bridge-label]");
+      if (labels.length) {
+        gsap.from(labels, {
+          y: 18,
           opacity: 0,
           duration: 0.75,
           ease: "power3.out",
-          stagger: 0.03,
+          stagger: 0.08,
           clearProps: "opacity,transform",
           scrollTrigger: {
             trigger: root,
@@ -44,16 +35,15 @@ export function AnnexGalleryBridge() {
             toggleActions: "play none none none",
           },
         });
-      });
-
-      return () => cleanups.forEach((fn) => fn());
+      }
     },
-    { scope: rootRef, dependencies: [reduced] }
+    { dependencies: [reduced] }
   );
 
   return (
     <div
       ref={rootRef}
+      id="annex-gallery-bridge"
       className="relative bg-allure-sand py-16 lg:py-24 dark:bg-allure-petrol"
     >
       <div className="relative flex min-h-[28vh] items-center overflow-hidden lg:min-h-[36vh]">

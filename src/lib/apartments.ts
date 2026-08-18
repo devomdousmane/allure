@@ -1,3 +1,8 @@
+import { APARTMENT_DETAILS } from "@/data/apartments";
+import { formatSurface } from "@/data/apartments/format";
+import type { ApartmentDetail } from "@/data/apartments/types";
+import { TEMOIN_MEDIA } from "@/lib/media";
+
 export type Apartment = {
   id: string;
   type: string;
@@ -9,55 +14,42 @@ export type Apartment = {
   highlights: string[];
 };
 
-export const APARTMENTS: Apartment[] = [
-  {
-    id: "studio",
-    type: "Type Studio",
-    slug: "studio",
-    desc: "Compact et optimisé, idéal premier investissement ou pied-à-terre aux Almadies.",
-    image: "/hero-sequence/frame_008.webp",
-    surface: "Sur demande",
-    price: "Sur demande",
-    highlights: ["Agencement optimisé", "Idéal investissement", "Lumineux"],
-  },
-  {
-    id: "type-a",
-    type: "Appartement Type A",
-    slug: "type-a",
-    desc: "Séjour lumineux, agencement fluide — l’entrée de gamme élégante d’Allure.",
-    image: "/hero-sequence/frame_012.webp",
-    surface: "Sur demande",
-    price: "Sur demande",
-    highlights: ["Séjour ouvert", "Exposition soignée", "Finitions premium"],
-  },
-  {
-    id: "type-b",
-    type: "Appartement Type B",
-    slug: "type-b",
-    desc: "Espaces généreux et double exposition pour un quotidien confortable.",
-    image: "/hero-sequence/frame_016.webp",
-    surface: "Sur demande",
-    price: "Sur demande",
-    highlights: ["Double exposition", "Espaces généreux", "Rangements"],
-  },
-  {
-    id: "type-c",
-    type: "Appartement Type C",
-    slug: "type-c",
-    desc: "Vue dégagée et prestations premium pour un art de vivre exigeant.",
-    image: "/hero-sequence/frame_020.webp",
-    surface: "Sur demande",
-    price: "Sur demande",
-    highlights: ["Vue dégagée", "Prestations premium", "Confort climatique"],
-  },
-  {
-    id: "type-d",
-    type: "Appartement Type D",
-    slug: "type-d",
-    desc: "La plus grande typologie, conçue pour les familles et les grands espaces.",
-    image: "/hero-sequence/frame_024.webp",
-    surface: "Sur demande",
-    price: "Sur demande",
-    highlights: ["Grande typologie", "Vie familiale", "Espaces de réception"],
-  },
-];
+/** Accroches courtes pour les cartes home (fiches = description complète). */
+const HOME_DESCRIPTIONS: Record<string, string> = {
+  studio:
+    "Compact et optimisé, idéal premier investissement ou pied-à-terre aux Almadies.",
+  "type-a":
+    "La plus généreuse typologie : séjour ouvert, suite parentale et double terrasse.",
+  "type-b":
+    "Espaces généreux et double exposition pour un quotidien confortable.",
+  "type-c":
+    "Vue dégagée et prestations premium pour un art de vivre exigeant.",
+  "type-d":
+    "Typologie compacte et fluide, pensée pour un quotidien sans superflu.",
+};
+
+/** Visuels home — intérieurs témoins (plus lisibles / moins « dining »). */
+const HOME_CARD_IMAGES: Record<string, string> = {
+  studio: TEMOIN_MEDIA.salon4,
+  "type-a": TEMOIN_MEDIA.typeASalon,
+  "type-b": TEMOIN_MEDIA.chambre1,
+  "type-c": TEMOIN_MEDIA.salon2,
+  "type-d": TEMOIN_MEDIA.salon3,
+};
+
+function toApartmentCard(apt: ApartmentDetail): Apartment {
+  return {
+    id: apt.id,
+    type: apt.slug === "studio" ? "Type Studio" : apt.name,
+    slug: apt.slug,
+    desc: HOME_DESCRIPTIONS[apt.slug] ?? apt.description,
+    image: HOME_CARD_IMAGES[apt.slug] ?? apt.heroImage,
+    surface: formatSurface(apt.surfaceTotal),
+    price: apt.price,
+    highlights: apt.highlights
+      .filter((h) => !h.toLowerCase().includes("m²"))
+      .slice(0, 3),
+  };
+}
+
+export const APARTMENTS: Apartment[] = APARTMENT_DETAILS.map(toApartmentCard);

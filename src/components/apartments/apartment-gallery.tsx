@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
+import { MediaImage } from "@/components/ui/media-image";
 import { cn } from "@/lib/utils";
 import type { ApartmentDetail } from "@/data/apartments/types";
 import { shortApartmentName } from "@/data/apartments/format";
@@ -44,11 +44,12 @@ export function ApartmentGallery({ apartment }: ApartmentGalleryProps) {
 
         <div className="mt-8 sm:mt-10">
           <div className="relative aspect-[4/3] overflow-hidden bg-allure-petrol/5 dark:bg-allure-sand/5 sm:aspect-[16/10]">
-            <Image
+            <MediaImage
               src={current.src}
               alt={current.alt}
               fill
               sizes="(min-width: 1024px) 72rem, 100vw"
+              loaderSize="md"
               className="object-cover"
             />
             <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-allure-petrol-deep/75 to-transparent px-4 py-4 sm:px-6 sm:py-5">
@@ -78,11 +79,12 @@ export function ApartmentGallery({ apartment }: ApartmentGalleryProps) {
                       : "opacity-50 hover:opacity-90"
                   )}
                 >
-                  <Image
+                  <MediaImage
                     src={img.src}
                     alt=""
                     fill
                     sizes="25vw"
+                    loaderSize="sm"
                     className="object-cover"
                   />
                 </button>

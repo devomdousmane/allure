@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import type { ApartmentDetail, ApartmentRoom } from "@/data/apartments/types";
@@ -27,6 +27,8 @@ export function ApartmentPlan({ apartment }: ApartmentPlanProps) {
   const hasSvg = Boolean(apartment.interactivePlan);
   const [view, setView] = useState<PlanView>("plan");
   const [activeId, setActiveId] = useState(apartment.rooms[0]?.id ?? "");
+  const itemRefs = useRef<Map<string, HTMLLIElement>>(new Map());
+  const listRef = useRef<HTMLUListElement>(null);
 
   const activeIndex = useMemo(() => {
     const i = apartment.rooms.findIndex((r) => r.id === activeId);
@@ -35,12 +37,35 @@ export function ApartmentPlan({ apartment }: ApartmentPlanProps) {
 
   const activeRoom = apartment.rooms[activeIndex] ?? apartment.rooms[0];
 
+  const selectRoom = useCallback(
+    (id: string) => {
+      if (!id || id === activeId) return;
+      setActiveId(id);
+    },
+    [activeId]
+  );
+
+  const selectByIndex = useCallback(
+    (index: number) => {
+      const room = apartment.rooms[index];
+      if (room) selectRoom(room.id);
+    },
+    [apartment.rooms, selectRoom]
+  );
+
+  // Garde la pièce active visible dans l’aside (liste scrollable)
+  useEffect(() => {
+    const el = itemRefs.current.get(activeId);
+    if (!el) return;
+    el.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }, [activeId]);
+
   return (
     <section
       id="plan"
       className="scroll-mt-28 bg-allure-sand/50 py-14 dark:bg-allure-petrol sm:py-20 lg:py-24"
     >
-      <div className="mx-auto max-w-6xl px-5 sm:px-6">
+      <div className="mx-auto max-w-[88rem] px-5 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div className="max-w-xl">
             <p className="font-sans text-xs uppercase tracking-[0.28em] text-allure-gold">
@@ -77,7 +102,7 @@ export function ApartmentPlan({ apartment }: ApartmentPlanProps) {
                 aria-selected={view === tab.id}
                 onClick={() => setView(tab.id)}
                 className={cn(
-                  "rounded-full px-4 py-2 font-sans text-[0.65rem] uppercase tracking-[0.16em] transition-colors",
+                  "cursor-pointer rounded-full px-4 py-2 font-sans text-[0.65rem] uppercase tracking-[0.16em] transition-colors duration-200",
                   view === tab.id
                     ? "bg-allure-petrol text-white dark:bg-allure-gold dark:text-allure-petrol-deep"
                     : "text-allure-ink/45 hover:text-allure-petrol dark:text-allure-sand/50 dark:hover:text-allure-sand"
@@ -89,21 +114,20 @@ export function ApartmentPlan({ apartment }: ApartmentPlanProps) {
           </div>
         </div>
 
-        <div className="mt-10 grid gap-8 lg:mt-12 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,0.9fr)] lg:items-start lg:gap-10">
-          {/* Plan */}
-          <div className="overflow-hidden rounded-sm border border-allure-petrol/10 bg-white dark:border-allure-sand/10 dark:bg-allure-petrol-deep">
+        {/* Plan dominant (~70 %) + légende compacte sticky */}
+        <div className="mt-10 grid gap-6 lg:mt-12 lg:grid-cols-[minmax(0,1fr)_minmax(16.5rem,20rem)] lg:items-start lg:gap-8 xl:grid-cols-[minmax(0,1fr)_minmax(17.5rem,22rem)] xl:gap-10">
+          <div className="min-w-0 overflow-hidden bg-transparent">
             {view === "plan" && apartment.interactivePlan ? (
               <InteractiveSvgPlan
                 src={apartment.interactivePlan}
+                backgroundSrc={`/apartments/${apartment.slug}/dimensions-plan-transparent.png`}
                 activeIndex={activeIndex}
                 label={`Plan interactif — ${apartment.name}`}
-                onRoomSelect={(hit) => {
-                  const room = apartment.rooms[hit.index];
-                  if (room) setActiveId(room.id);
-                }}
+                onRoomSelect={(hit) => selectByIndex(hit.index)}
+                className="w-full"
               />
             ) : (
-              <div className="relative aspect-[4/3] w-full sm:aspect-[16/10]">
+              <div className="relative aspect-[16/9] w-full bg-transparent sm:aspect-[16/10] lg:min-h-[28rem] xl:min-h-[32rem]">
                 <Image
                   src={
                     view === "plan"
@@ -116,18 +140,17 @@ export function ApartmentPlan({ apartment }: ApartmentPlanProps) {
                       : `Vue coupe — ${apartment.name}`
                   }
                   fill
-                  sizes="(min-width: 1024px) 60vw, 100vw"
-                  className="object-contain p-2 sm:p-4"
+                  sizes="(min-width: 1280px) 70vw, (min-width: 1024px) 65vw, 100vw"
+                  className="object-contain p-1 sm:p-2"
                   priority
                 />
               </div>
             )}
           </div>
 
-          {/* Légende */}
-          <aside className="flex min-h-0 flex-col">
+          <aside className="flex min-h-0 flex-col lg:sticky lg:top-24 lg:max-h-[calc(100dvh-7rem)]">
             {activeRoom ? (
-              <div className="mb-5 border-b border-allure-petrol/10 pb-5 dark:border-allure-sand/10">
+              <div className="mb-4 shrink-0 border-b border-allure-petrol/10 pb-4 dark:border-allure-sand/10">
                 <div className="flex items-baseline justify-between gap-3">
                   <div className="min-w-0">
                     <p className="font-sans text-[0.6rem] uppercase tracking-[0.2em] text-allure-gold">
@@ -145,23 +168,37 @@ export function ApartmentPlan({ apartment }: ApartmentPlanProps) {
               </div>
             ) : null}
 
-            <p className="mb-3 font-sans text-[0.6rem] uppercase tracking-[0.2em] text-allure-ink/40 dark:text-allure-sand/40">
+            <p className="mb-3 shrink-0 font-sans text-[0.6rem] uppercase tracking-[0.2em] text-allure-ink/40 dark:text-allure-sand/40">
               Pièces · {apartment.rooms.length}
             </p>
 
-            <ul className="grid max-h-[min(28rem,55vh)] grid-cols-1 gap-px overflow-y-auto overscroll-contain rounded-sm border border-allure-petrol/10 bg-allure-petrol/10 sm:grid-cols-2 lg:grid-cols-1 dark:border-allure-sand/10 dark:bg-allure-sand/10">
+            <ul
+              ref={listRef}
+              className="relative -mx-1 min-h-0 flex-1 space-y-1.5 overflow-y-auto overscroll-contain px-1 pb-1 sm:grid sm:grid-cols-2 sm:gap-1.5 sm:space-y-0 lg:block lg:space-y-1.5"
+            >
               {apartment.rooms.map((room, index) => {
                 const isActive = room.id === activeRoom?.id;
                 return (
-                  <li key={room.id}>
+                  <li
+                    key={room.id}
+                    ref={(node) => {
+                      if (node) itemRefs.current.set(room.id, node);
+                      else itemRefs.current.delete(room.id);
+                    }}
+                    className={cn(
+                      "relative transition-transform duration-200",
+                      isActive && "z-10"
+                    )}
+                  >
                     <button
                       type="button"
-                      onClick={() => setActiveId(room.id)}
+                      aria-pressed={isActive}
+                      onClick={() => selectRoom(room.id)}
                       className={cn(
-                        "grid w-full min-h-11 grid-cols-[1.75rem_1fr_auto] items-center gap-2 px-3 py-3.5 text-left transition-colors sm:px-4",
+                        "grid w-full min-h-11 cursor-pointer grid-cols-[1.75rem_1fr_auto] items-center gap-2 px-3 py-2.5 text-left transition-all duration-200 sm:px-3.5",
                         isActive
-                          ? "bg-allure-petrol text-white dark:bg-allure-gold dark:text-allure-petrol-deep"
-                          : "bg-white text-allure-ink/80 hover:bg-allure-sand/60 dark:bg-allure-petrol-deep dark:text-allure-sand/80 dark:hover:bg-allure-petrol"
+                          ? "bg-allure-petrol text-white shadow-[0_12px_28px_-16px_rgba(30,75,93,0.65)] ring-1 ring-allure-gold dark:bg-allure-gold dark:text-allure-petrol-deep dark:shadow-[0_12px_28px_-16px_rgba(0,0,0,0.55)]"
+                          : "bg-white/70 text-allure-ink/80 hover:bg-white dark:bg-allure-petrol-deep/70 dark:text-allure-sand/80 dark:hover:bg-allure-petrol-deep"
                       )}
                     >
                       <span

@@ -16,6 +16,7 @@ import {
 } from "@/data/apartments";
 import { formatSurface } from "@/data/apartments/format";
 import { SITE } from "@/lib/site";
+import { JsonLd, apartmentJsonLd, breadcrumbJsonLd } from "@/components/seo/json-ld";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -38,6 +39,7 @@ export async function generateMetadata({
   return {
     title: apartment.name,
     description,
+    alternates: { canonical: `/les-appartements/${apartment.slug}` },
     openGraph: {
       title: `${apartment.name} — ${SITE.name}`,
       description,
@@ -53,8 +55,18 @@ export default async function ApartmentDetailPage({ params }: PageProps) {
 
   return (
     <>
+      <JsonLd
+        data={[
+          apartmentJsonLd(apartment),
+          breadcrumbJsonLd([
+            { name: "Accueil", path: "/" },
+            { name: "Les appartements", path: "/les-appartements" },
+            { name: apartment.name, path: `/les-appartements/${apartment.slug}` },
+          ]),
+        ]}
+      />
       <SiteHeader />
-      <main className="flex flex-1 flex-col">
+      <main id="main-content" className="flex flex-1 flex-col">
         <ApartmentHero apartment={apartment} />
         <ApartmentStats apartment={apartment} />
         <ApartmentPlan apartment={apartment} />

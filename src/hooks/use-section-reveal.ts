@@ -2,56 +2,136 @@
 
 import { useRef, type RefObject } from "react";
 import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { registerGsap } from "@/lib/gsap/register";
-import { DURATION, EASE, STAGGER } from "@/lib/gsap/presets";
-import { splitForReveal, type SplitKinds } from "@/lib/gsap/split-text";
+import { DURATION, EASE } from "@/lib/gsap/presets";
 import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
+import {
+  isRevealArmed,
+  type HomeRevealId,
+} from "@/lib/home-motion-debug";
 
 registerGsap();
 
 export type UseSectionRevealOptions = {
+  /** Unused by IO trigger — kept for API compat with callers */
   start?: string;
   onEnter?: (root: HTMLElement) => void | (() => void);
   skipDefaults?: boolean;
+  /** Id debug — requis en mode HOME_MOTION_DEBUG pour autoriser l’anim */
+  debugId?: HomeRevealId;
+  /** Portion visible requise (0–1). Défaut 0.22 */
+  threshold?: number;
 };
 
-function isPastStart(el: HTMLElement, startPercent = 85) {
+const HIDE_SEL =
+  "[data-reveal], [data-split], [data-reveal-media], [data-presence-frame], [data-presence-divider], [data-clip-reveal], [data-about-card], [data-about-title], [data-about-trust], [data-about-body], [data-about-cta], [data-statement-word], [data-statement-sub], [data-letter]";
+
+/**
+ * True when the section is meaningfully on screen — not a 1px peek
+ * under a pinned hero. Works for scroll-down and scroll-up entry.
+ */
+function isMeaningfullyVisible(el: HTMLElement, minRatio = 0.22) {
   const rect = el.getBoundingClientRect();
-  return rect.top < window.innerHeight * (startPercent / 100);
+  const vh = window.innerHeight;
+  if (rect.height <= 0) return false;
+
+  const visible = Math.min(rect.bottom, vh) - Math.max(rect.top, 0);
+  if (visible <= 0) return false;
+
+  const ratio = visible / Math.min(rect.height, vh);
+  // Entered from below (scroll down) or from above (scroll up)
+  const inBand = rect.top < vh * 0.85 && rect.bottom > vh * 0.15;
+  return inBand && ratio >= minRatio;
+}
+
+function isFullyGone(el: HTMLElement) {
+  const rect = el.getBoundingClientRect();
+  const vh = window.innerHeight;
+  return rect.bottom < 8 || rect.top > vh - 8;
 }
 
 /**
- * Reliable scroll reveal — never leaves content stuck at opacity 0.
- * Uses ScrollTrigger.onEnter + fromTo (not timeline.from + immediateRender).
+ * Scroll reveal — plays on enter (down or up), resets when fully left,
+ * so scrolling back up replays the animation.
  */
 export function useSectionReveal(
   scopeRef: RefObject<HTMLElement | null>,
   options: UseSectionRevealOptions = {}
 ) {
   const reduced = usePrefersReducedMotion();
+  const optionsRef = useRef(options);
+  optionsRef.current = options;
   const cleanups = useRef<Array<() => void>>([]);
   const played = useRef(false);
+  const timelineRef = useRef<gsap.core.Timeline | null>(null);
 
   useGSAP(
     () => {
       const root = scopeRef.current;
       if (!root || reduced === null) return;
 
+      if (!isRevealArmed(optionsRef.current.debugId)) {
+        gsap.set(root.querySelectorAll<HTMLElement>(HIDE_SEL), {
+          autoAlpha: 1,
+          clearProps: "transform",
+        });
+        return;
+      }
+
       played.current = false;
-      cleanups.current.forEach((fn) => fn());
-      cleanups.current = [];
+      timelineRef.current?.kill();
+      timelineRef.current = null;
 
       const soft = reduced === true;
-      const start = options.start ?? "top 85%";
+      const minRatio = optionsRef.current.threshold ?? 0.22;
+
+      const hideables = () =>
+        root.querySelectorAll<HTMLElement>(HIDE_SEL);
+
+      if (!soft) {
+        gsap.set(hideables(), { autoAlpha: 0 });
+      }
+
+      const runCleanups = () => {
+        const fns = cleanups.current.splice(0);
+        fns.forEach((fn) => {
+          try {
+            fn();
+          } catch {
+            /* SplitText vs React DOM race */
+          }
+        });
+      };
+
+      const reset = () => {
+        if (!played.current) return;
+        played.current = false;
+
+        timelineRef.current?.kill();
+        timelineRef.current = null;
+        gsap.killTweensOf(root.querySelectorAll(".split-word, .split-char, .split-line"));
+
+        runCleanups();
+
+        const nodes = hideables();
+        gsap.killTweensOf(nodes);
+
+        if (!soft) {
+          gsap.set(nodes, { autoAlpha: 0, clearProps: "transform" });
+        }
+      };
 
       const play = () => {
         if (played.current) return;
+        if (!soft && !isMeaningfullyVisible(root, minRatio)) return;
+
         played.current = true;
 
-        if (options.skipDefaults) {
-          const extra = options.onEnter?.(root);
+        const opts = optionsRef.current;
+
+        if (opts.skipDefaults) {
+          const extra = opts.onEnter?.(root);
           if (typeof extra === "function") cleanups.current.push(extra);
           return;
         }
@@ -75,7 +155,10 @@ export function useSectionReveal(
           "[data-reveal-media]"
         );
 
-        const tl = gsap.timeline({ defaults: { ease: soft ? "none" : EASE.out } });
+        const tl = gsap.timeline({
+          defaults: { ease: soft ? "none" : EASE.out },
+        });
+        timelineRef.current = tl;
 
         if (eyebrow.length) {
           tl.fromTo(
@@ -86,44 +169,20 @@ export function useSectionReveal(
           );
         }
 
-        root.querySelectorAll<HTMLElement>("[data-split]").forEach((el) => {
-          if (soft) {
-            tl.fromTo(
-              el,
-              { autoAlpha: 0 },
-              { autoAlpha: 1, duration: 0.35 },
-              "-=0.15"
-            );
-            return;
-          }
-
-          const kinds = (el.dataset.split || "lines,words") as SplitKinds;
-          const animateAttr = el.dataset.splitAnimate as
-            | "lines"
-            | "words"
-            | "chars"
-            | undefined;
-          const { targets, revert } = splitForReveal(el, {
-            types: kinds,
-            animate: animateAttr,
-          });
-          cleanups.current.push(revert);
-
-          if (targets.length) {
-            gsap.set(targets, { yPercent: 110, autoAlpha: 0 });
-            tl.to(
-              targets,
-              {
-                yPercent: 0,
-                autoAlpha: 1,
-                duration: DURATION.base,
-                stagger: animateAttr === "chars" ? STAGGER.chars : STAGGER.words,
-                ease: EASE.out,
-              },
-              "-=0.25"
-            );
-          }
-        });
+        const splits = root.querySelectorAll<HTMLElement>("[data-split]");
+        if (splits.length) {
+          tl.fromTo(
+            splits,
+            { autoAlpha: 0, y: soft ? 0 : 18 },
+            {
+              autoAlpha: 1,
+              y: 0,
+              duration: soft ? 0.35 : DURATION.base,
+              stagger: 0.06,
+            },
+            "-=0.15"
+          );
+        }
 
         if (title.length) {
           tl.fromTo(
@@ -172,48 +231,52 @@ export function useSectionReveal(
           );
         }
 
-        const extra = options.onEnter?.(root);
+        const extra = opts.onEnter?.(root);
         if (typeof extra === "function") cleanups.current.push(extra);
       };
 
-      const st = ScrollTrigger.create({
-        trigger: root,
-        start,
-        once: true,
-        onEnter: play,
-        // If already scrolled past when ST is created / after refresh
-        onRefresh: (self) => {
-          if (self.progress > 0 || isPastStart(root)) play();
+      const observer = new IntersectionObserver(
+        (entries) => {
+          const entry = entries[0];
+          if (!entry) return;
+
+          if (!entry.isIntersecting || isFullyGone(root)) {
+            reset();
+            return;
+          }
+
+          if (entry.intersectionRatio < minRatio) return;
+          if (!isMeaningfullyVisible(root, minRatio)) return;
+          play();
         },
+        {
+          threshold: [0, 0.05, 0.1, 0.2, 0.25, 0.35, 0.5, 0.75, 1],
+          rootMargin: "0px 0px -10% 0px",
+        }
+      );
+
+      observer.observe(root);
+
+      requestAnimationFrame(() => {
+        if (isMeaningfullyVisible(root, minRatio)) play();
       });
 
-      // Immediate play if already in / past the trigger zone
-      if (isPastStart(root)) {
-        requestAnimationFrame(play);
-      }
-
-      // Absolute failsafe — never leave section content invisible
-      const failsafe = window.setTimeout(() => {
-        if (played.current) return;
-        play();
-        // If somehow still hidden, force visible
-        root
-          .querySelectorAll<HTMLElement>(
-            '[data-reveal], [data-split], [data-reveal-media], .split-word, .split-char, .split-line'
-          )
-          .forEach((el) => {
-            gsap.set(el, { clearProps: "opacity,visibility,transform" });
-          });
-      }, 2500);
-
       return () => {
-        window.clearTimeout(failsafe);
-        st.kill();
-        cleanups.current.forEach((fn) => fn());
-        cleanups.current = [];
+        observer.disconnect();
+        timelineRef.current?.kill();
+        timelineRef.current = null;
+        runCleanups();
       };
     },
-    { scope: scopeRef, dependencies: [reduced, options.start] }
+    {
+      dependencies: [
+        reduced,
+        options.start,
+        options.skipDefaults,
+        options.debugId,
+        options.threshold,
+      ],
+    }
   );
 
   return { reducedMotion: reduced === true };

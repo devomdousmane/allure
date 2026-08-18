@@ -8,6 +8,7 @@ export const EASE = {
 export const DURATION = {
   fast: 0.55,
   base: 0.85,
+  reveal: 0.95,
   slow: 1.1,
 } as const;
 
@@ -45,3 +46,18 @@ export function parallaxY(distance = 48): TweenVars {
     ease: "none",
   };
 }
+
+/** Perspective 3D légère pour cartes / dossiers (CSS transform). */
+export const TILT_3D = {
+  maxDeg: 8,
+  scale: 1.02,
+  perspective: 900,
+  spring: { type: "spring" as const, stiffness: 260, damping: 22 },
+} as const;
+
+/** Durées micro-UI Motion (ms) — alignées skill UX 150–300. */
+export const MOTION_UI = {
+  fast: 0.18,
+  base: 0.28,
+  soft: 0.4,
+} as const;

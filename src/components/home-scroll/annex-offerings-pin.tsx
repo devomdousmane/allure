@@ -9,54 +9,98 @@ import { cn } from "@/lib/utils";
 registerGsap();
 
 const CAPTIONS = [
-  { id: "accompagnement", line: "Un parcours clair, de la visite à la remise des clés." },
-  { id: "services", line: "Showroom, diaspora, suivi chantier — à votre rythme." },
-];
+  {
+    id: "accompagnement",
+    line: "Un parcours clair, de la visite à la remise des clés.",
+  },
+  {
+    id: "services",
+    line: "Showroom, diaspora, suivi chantier — à votre rythme.",
+  },
+] as const;
 
-/** Sticky caption — appears with Offerings, updates through Services, then hides. */
+function syncCaption(
+  accompagnement: HTMLElement,
+  services: HTMLElement,
+  setCaption: (line: string) => void
+) {
+  const mid = window.innerHeight * 0.55;
+  const servicesRect = services.getBoundingClientRect();
+  const servicesInView =
+    servicesRect.top < mid && servicesRect.bottom > mid * 0.85;
+
+  if (servicesInView) {
+    setCaption(CAPTIONS[1].line);
+    return;
+  }
+
+  const accRect = accompagnement.getBoundingClientRect();
+  const accInView = accRect.top < mid && accRect.bottom > mid * 0.85;
+  if (accInView) {
+    setCaption(CAPTIONS[0].line);
+  }
+}
+
+/** Sticky caption — visible sur Offre + Services, rejoue au scroll up. */
 export function AnnexOfferingsPin() {
-  const [caption, setCaption] = useState(CAPTIONS[0].line);
+  const [caption, setCaption] = useState<string>(CAPTIONS[0].line);
   const [visible, setVisible] = useState(false);
   const reduced = usePrefersReducedMotion();
 
   useEffect(() => {
     if (reduced === null) return;
 
+    const accompagnement = document.getElementById("accompagnement");
+    const services = document.getElementById("services");
+    if (!accompagnement || !services) return;
+
     const triggers: ScrollTrigger[] = [];
 
     const show = ScrollTrigger.create({
-      trigger: "#accompagnement",
-      endTrigger: "#services",
+      trigger: accompagnement,
+      endTrigger: services,
       start: "top 75%",
       end: "bottom 25%",
-      onToggle: (self) => setVisible(self.isActive),
+      invalidateOnRefresh: true,
+      onEnter: () => setVisible(true),
+      onLeave: () => setVisible(false),
+      onEnterBack: () => setVisible(true),
+      onLeaveBack: () => setVisible(false),
     });
     triggers.push(show);
-    setVisible(show.isActive);
 
-    CAPTIONS.forEach((item) => {
-      const el = document.getElementById(item.id);
-      if (!el) return;
-      triggers.push(
-        ScrollTrigger.create({
-          trigger: el,
-          start: "top 55%",
-          end: "bottom 45%",
-          onToggle: (self) => {
-            if (self.isActive) setCaption(item.line);
-          },
-        })
-      );
+    const track = ScrollTrigger.create({
+      trigger: accompagnement,
+      endTrigger: services,
+      start: "top bottom",
+      end: "bottom top",
+      invalidateOnRefresh: true,
+      onUpdate: () => syncCaption(accompagnement, services, setCaption),
     });
+    triggers.push(track);
 
-    requestAnimationFrame(() => ScrollTrigger.refresh());
+    const refresh = () => {
+      ScrollTrigger.refresh();
+      setVisible(show.isActive);
+      syncCaption(accompagnement, services, setCaption);
+    };
 
-    return () => triggers.forEach((t) => t.kill());
+    setVisible(show.isActive);
+    syncCaption(accompagnement, services, setCaption);
+    requestAnimationFrame(refresh);
+    const t1 = window.setTimeout(refresh, 400);
+    const t2 = window.setTimeout(refresh, 1200);
+
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      triggers.forEach((t) => t.kill());
+    };
   }, [reduced]);
 
   return (
     <div
-      className="pointer-events-none absolute inset-y-0 right-0 z-[6] hidden w-44 lg:block"
+      className="pointer-events-none absolute inset-y-0 right-0 z-[6] hidden w-44 overflow-hidden lg:block"
       aria-hidden
     >
       <div
@@ -70,10 +114,7 @@ export function AnnexOfferingsPin() {
         <p className="font-sans text-[10px] uppercase tracking-[0.28em] text-allure-gold">
           Fil narratif
         </p>
-        <p
-          key={caption}
-          className="mt-3 font-heading text-xs leading-snug text-allure-petrol/70 dark:text-allure-sand/70"
-        >
+        <p className="mt-3 font-heading text-xs leading-snug text-allure-petrol/70 dark:text-allure-sand/70">
           {caption}
         </p>
       </div>

@@ -1,0 +1,18 @@
+# Next.js 16 sur Netlify — l’adapter OpenNext est installé automatiquement.
+# Ne pas pinner @netlify/plugin-nextjs sauf besoin d’une version précise.
+
+[build]
+  command = "node scripts/strip-source-media.mjs && npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "20"
+  NEXT_TELEMETRY_DISABLED = "1"
+  NEXT_PUBLIC_SITE_URL = "https://residence-allure.com"
+
+# www → apex (alias DNS à déclarer aussi dans l’UI Netlify)
+[[redirects]]
+  from = "https://www.residence-allure.com/*"
+  to = "https://residence-allure.com/:splat"
+  status = 301
+  force = true

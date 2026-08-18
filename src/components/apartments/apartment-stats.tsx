@@ -1,5 +1,6 @@
 import type { ApartmentDetail } from "@/data/apartments/types";
 import { getApartmentStats } from "@/data/apartments/format";
+import { SectionSharp } from "@/components/ui/section-sharp";
 
 type ApartmentStatsProps = {
   apartment: ApartmentDetail;
@@ -9,8 +10,15 @@ export function ApartmentStats({ apartment }: ApartmentStatsProps) {
   const stats = getApartmentStats(apartment);
 
   return (
-    <section className="border-b border-allure-petrol/10 bg-white dark:border-allure-sand/10 dark:bg-allure-petrol-deep">
-      <div className="mx-auto max-w-6xl">
+    <section className="relative border-b border-allure-petrol/10 bg-white dark:border-allure-sand/10 dark:bg-allure-petrol-deep">
+      {/* Sharp haut — filet or seul en thème clair (pas de barre pétrole) */}
+      <SectionSharp
+        edge="top"
+        mode="line"
+        variant="chevron"
+        className="h-8 sm:h-9 lg:h-10"
+      />
+      <div className="relative z-[2] mx-auto max-w-6xl pt-4 sm:pt-5">
         <ul className="flex gap-0 overflow-x-auto px-5 sm:grid sm:grid-cols-5 sm:overflow-visible sm:px-6 sm:divide-x sm:divide-allure-petrol/10 dark:sm:divide-allure-sand/10">
           {stats.map((stat) => (
             <li

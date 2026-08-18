@@ -1,14 +1,16 @@
+import path from "node:path";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Empêche Turbopack d’utiliser C:\Users\omdou\package-lock.json comme racine
+  // (cache cassé → @swc/helpers introuvable).
+  turbopack: {
+    root: path.resolve(__dirname),
+  },
+  transpilePackages: ["react-pageflip", "page-flip"],
   images: {
     qualities: [75, 85],
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "images.unsplash.com",
-      },
-    ],
+    formats: ["image/avif", "image/webp"],
   },
   async redirects() {
     return [
@@ -36,6 +38,22 @@ const nextConfig: NextConfig = {
         source: "/studio-2",
         destination: "/les-appartements/studio",
         permanent: true,
+      },
+    ];
+  },
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=()",
+          },
+        ],
       },
     ];
   },

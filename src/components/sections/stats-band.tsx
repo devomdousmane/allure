@@ -2,14 +2,11 @@
 
 import { useRef, useState } from "react";
 import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useGSAP } from "@gsap/react";
 import { cn } from "@/lib/utils";
-import { registerGsap } from "@/lib/gsap/register";
 import { DURATION, EASE, STAGGER } from "@/lib/gsap/presets";
-import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
-
-registerGsap();
+import { SectionSeam, SEAM } from "@/components/ui/section-seam";
+import { useSectionReveal } from "@/hooks/use-section-reveal";
+import { HomeCtaRow } from "@/components/home-scroll/home-cta-row";
 
 const STATS = [
   { value: 5, suffix: "", label: "Typologies d'appartements" },
@@ -18,44 +15,43 @@ const STATS = [
   { value: 2026, suffix: "", label: "Livraison prévue" },
 ] as const;
 
+/**
+ * Étape debug 2 — branché sur `useSectionReveal` (même IO + replay up/down).
+ */
 export function StatsBand() {
   const sectionRef = useRef<HTMLElement>(null);
   const [hovered, setHovered] = useState<number | null>(2);
-  const reduced = usePrefersReducedMotion();
 
-  useGSAP(
-    () => {
-      const root = sectionRef.current;
-      if (!root || reduced === null) return;
-
-      const soft = reduced === true;
+  useSectionReveal(sectionRef, {
+    debugId: "stats",
+    skipDefaults: true,
+    onEnter: (root) => {
+      const soft = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       const cards = root.querySelectorAll<HTMLElement>("[data-reveal='item']");
       const values = root.querySelectorAll<HTMLElement>("[data-count]");
-      let played = false;
+      const labels = root.querySelectorAll<HTMLElement>("[data-stat-label]");
 
-      const play = () => {
-        if (played) return;
-        played = true;
+      const tl = gsap.timeline({
+        defaults: { ease: soft ? "none" : EASE.out },
+      });
 
-        const tl = gsap.timeline({ defaults: { ease: soft ? "none" : EASE.out } });
+      tl.fromTo(
+        cards,
+        { autoAlpha: 0, y: soft ? 0 : 28 },
+        {
+          autoAlpha: 1,
+          y: 0,
+          duration: soft ? 0.35 : DURATION.base,
+          stagger: { amount: STAGGER.items * cards.length, from: "start" },
+        }
+      );
 
-        tl.fromTo(
-          cards,
-          { autoAlpha: 0, y: soft ? 0 : 28 },
-          {
-            autoAlpha: 1,
-            y: 0,
-            duration: soft ? 0.35 : DURATION.base,
-            stagger: { amount: STAGGER.items * cards.length, from: "start" },
-          }
-        );
-
-        if (soft) return;
-
+      if (!soft) {
         values.forEach((el, i) => {
           const end = Number(el.dataset.count ?? 0);
           const suffix = el.dataset.suffix ?? "";
           const obj = { n: 0 };
+          el.textContent = `0${suffix}`;
 
           tl.to(
             obj,
@@ -70,42 +66,40 @@ export function StatsBand() {
             i === 0 ? "-=0.4" : "<"
           );
         });
-      };
 
-      const st = ScrollTrigger.create({
-        trigger: root,
-        start: "top 82%",
-        once: true,
-        onEnter: play,
-        onRefresh: (self) => {
-          if (self.progress > 0) play();
-        },
-      });
-
-      const rect = root.getBoundingClientRect();
-      if (rect.top < window.innerHeight * 0.82) {
-        requestAnimationFrame(play);
+        labels.forEach((el, i) => {
+          tl.fromTo(
+            el,
+            { autoAlpha: 0, y: 10 },
+            { autoAlpha: 1, y: 0, duration: DURATION.fast },
+            i === 0 ? "-=0.85" : "<"
+          );
+        });
       }
 
-      const failsafe = window.setTimeout(() => {
-        if (!played) play();
-      }, 2500);
-
       return () => {
-        window.clearTimeout(failsafe);
-        st.kill();
+        tl.kill();
+        values.forEach((el) => {
+          const end = el.dataset.count ?? "0";
+          const suffix = el.dataset.suffix ?? "";
+          el.textContent = `${end}${suffix}`;
+        });
       };
     },
-    { scope: sectionRef, dependencies: [reduced] }
-  );
+  });
 
   return (
     <section
       ref={sectionRef}
       id="stats"
-      className="relative bg-white pb-16 pt-8 lg:pb-20 lg:pt-10 dark:bg-allure-petrol-deep"
+      className="relative overflow-hidden bg-white pb-16 pt-8 lg:pb-20 lg:pt-10 dark:bg-allure-petrol-deep"
     >
-      <div className="mx-auto max-w-6xl px-6">
+      <SectionSeam
+        edges="top"
+        from={SEAM.white}
+        fromDark={SEAM.petrolDeep}
+      />
+      <div className="relative z-[2] mx-auto max-w-6xl px-6">
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
           {STATS.map((stat, i) => {
             const isActive = hovered === i;
@@ -135,12 +129,28 @@ export function StatsBand() {
                   {stat.value}
                   {stat.suffix}
                 </div>
-                <p className="mt-2 font-sans text-xs text-allure-petrol/55 dark:text-allure-sand/55">
+                <p
+                  data-stat-label
+                  className="mt-2 font-sans text-xs text-allure-petrol/55 dark:text-allure-sand/55"
+                >
                   {stat.label}
                 </p>
               </div>
             );
           })}
+        </div>
+
+        <div data-reveal="item" className="mt-10 flex justify-center lg:mt-12">
+          <HomeCtaRow
+            primary={{
+              label: "Découvrir les typologies",
+              href: "/#appartements",
+            }}
+            secondary={{
+              label: "Appartements témoins",
+              href: "/appartements-temoins",
+            }}
+          />
         </div>
       </div>
     </section>

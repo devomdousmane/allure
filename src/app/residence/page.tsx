@@ -1,136 +1,89 @@
 import type { Metadata } from "next";
-import Image from "next/image";
-import Link from "next/link";
-import {
-  Waves,
-  Dumbbell,
-  ShieldCheck,
-  Car,
-  Wifi,
-  Trees,
-  Baby,
-  Users,
-  Zap,
-  Camera,
-  Wind,
-  Sofa,
-  ConciergeBell,
-} from "lucide-react";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { PageHero } from "@/components/layout/page-hero";
 import { Button } from "@/components/ui/button";
-import { AMENITY_LABELS } from "@/lib/amenities";
-import { LOCAL_GALLERY } from "@/lib/media";
+import { SHARP } from "@/components/ui/section-sharp";
+import Link from "next/link";
+import {
+  ResidenceAmenities,
+  ResidenceApartments,
+  ResidenceCta,
+  ResidenceExplore,
+  ResidenceFolderGuide,
+  ResidenceGallery,
+  ResidenceNeighborhood,
+} from "@/components/residence";
+import { BrochureSection } from "@/components/brochure";
+import {
+  RESIDENCE_COPY,
+  RESIDENCE_HERO,
+  RESIDENCE_OG_IMAGE,
+} from "@/lib/residence";
 import { SITE } from "@/lib/site";
+import { SEAM } from "@/components/ui/section-seam";
+import { PageJsonLd } from "@/components/seo/json-ld";
 
 export const metadata: Metadata = {
   title: "La Résidence",
   description:
-    "Prestations d’exception à la Résidence Allure : piscine, sport, sécurité 24h/24, parking et plus encore aux Almadies.",
+    "Prestations d’exception à la Résidence Allure : appartements de luxe, voisinage Almadies et galerie des cadres de vie.",
+  alternates: { canonical: "/residence" },
   openGraph: {
     title: `La Résidence — ${SITE.name}`,
-    description:
-      "Un cadre de vie exclusif : 13 prestations pour un quotidien sans compromis.",
+    description: RESIDENCE_COPY.heroDescription,
+    images: [{ url: RESIDENCE_OG_IMAGE }],
   },
 };
-
-const ICONS = [
-  Waves,
-  Dumbbell,
-  ShieldCheck,
-  Camera,
-  Car,
-  Zap,
-  Wifi,
-  Wind,
-  Trees,
-  Baby,
-  Users,
-  Sofa,
-  ConciergeBell,
-] as const;
 
 export default function ResidencePage() {
   return (
     <>
+      <PageJsonLd
+        title="La Résidence"
+        path="/residence"
+        description="Prestations d’exception à la Résidence Allure : appartements de luxe, voisinage Almadies et galerie des cadres de vie."
+      />
       <SiteHeader />
-      <main className="flex flex-1 flex-col">
+      <main id="main-content" className="flex flex-1 flex-col">
         <PageHero
-          eyebrow="La Résidence"
-          title="Un cadre de vie exclusif"
-          description="Architecture harmonieuse, prestations premium et proximité de la plage — Allure incarne un art de vivre aux Almadies."
-          image="/Allure/HD.webp"
-        />
-
-        <section className="bg-white py-20 dark:bg-allure-petrol-deep">
-          <div className="mx-auto max-w-6xl px-6">
-            <div className="mx-auto max-w-2xl text-center">
-              <p className="font-sans text-xs uppercase tracking-[0.3em] text-allure-gold">
-                Prestations
-              </p>
-              <h2 className="mt-4 font-heading text-3xl text-allure-petrol dark:text-allure-sand">
-                Tout pour votre quotidien
-              </h2>
-            </div>
-            <div className="mt-14 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-allure-petrol/10 bg-allure-petrol/10 sm:grid-cols-3 lg:grid-cols-4 dark:border-allure-sand/10 dark:bg-allure-sand/10">
-              {AMENITY_LABELS.map((label, i) => {
-                const Icon = ICONS[i] ?? ConciergeBell;
-                return (
-                  <div
-                    key={label}
-                    className="flex flex-col items-center justify-center gap-3 bg-white px-4 py-10 text-center dark:bg-allure-petrol"
-                  >
-                    <Icon
-                      className="h-6 w-6 text-allure-petrol dark:text-allure-gold"
-                      strokeWidth={1.5}
-                    />
-                    <span className="font-sans text-xs uppercase tracking-[0.08em] text-allure-ink/70 dark:text-allure-sand/70">
-                      {label}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-
-        <section className="bg-allure-sand py-20 dark:bg-allure-petrol">
-          <div className="mx-auto max-w-6xl px-6">
-            <div className="mb-12 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-              <div>
-                <p className="font-sans text-xs uppercase tracking-[0.3em] text-allure-gold">
-                  Galerie
-                </p>
-                <h2 className="mt-3 font-heading text-3xl text-allure-petrol dark:text-allure-sand">
-                  La résidence en images
-                </h2>
-              </div>
+          eyebrow={RESIDENCE_COPY.heroEyebrow}
+          title={RESIDENCE_COPY.heroTitle}
+          description={RESIDENCE_COPY.heroDescription}
+          image={RESIDENCE_HERO.image}
+          videoSrc={RESIDENCE_HERO.video}
+          sharpTo={SHARP.white}
+          sharpToDark={SHARP.petrolDeep}
+          actions={
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <Button asChild size="lg" className="btn-cta">
+                <a href="#visite-guidee">Visite guidée</a>
+              </Button>
               <Button
                 asChild
-                className="rounded-full bg-allure-petrol text-white dark:bg-allure-gold dark:text-allure-petrol-deep"
+                size="lg"
+                variant="outline"
+                className="rounded-full border-white/30 bg-transparent text-white hover:bg-white/10"
               >
-                <Link href="/les-appartements">Voir les appartements</Link>
+                <Link href="/brochure">Brochure</Link>
               </Button>
             </div>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {LOCAL_GALLERY.slice(0, 6).map((item) => (
-                <div
-                  key={item.src}
-                  className="relative aspect-[4/3] overflow-hidden rounded-xl"
-                >
-                  <Image
-                    src={item.src}
-                    alt={item.alt}
-                    fill
-                    sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                    className="object-cover"
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+          }
+        />
+
+        <ResidenceAmenities />
+        <BrochureSection
+          from={SEAM.white}
+          fromDark={SEAM.petrolDeep}
+          title="La brochure Allure"
+          description="Feuilletez le programme comme un livre — typologies, prestations et vision du projet aux Almadies."
+        />
+        <ResidenceFolderGuide />
+        <ResidenceExplore />
+        <ResidenceApartments />
+        <ResidenceNeighborhood />
+        <ResidenceGallery />
+        <ResidenceCta />
       </main>
       <SiteFooter />
     </>

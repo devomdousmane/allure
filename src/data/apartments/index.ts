@@ -16,6 +16,21 @@ export { TYPE_A } from "./type-a";
 export { TYPE_B } from "./type-b";
 export { TYPE_C } from "./type-c";
 export { TYPE_D } from "./type-d";
+export {
+  BROCHURE,
+  BROCHURE_PDF,
+  type BrochurePage,
+  type BrochureLayer,
+} from "./brochure-manifest";
+export type {
+  FlipBookData,
+  FlipBookPage,
+  FlipBookLayer,
+} from "@/data/flipbook-types";
+export {
+  withExtraLayers,
+  brochureLayerSrc,
+} from "./brochure-layers";
 
 /** Registre des fiches détaillées (ordre hub). */
 export const APARTMENT_DETAILS: ApartmentDetail[] = [

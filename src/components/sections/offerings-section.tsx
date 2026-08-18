@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import Image from "next/image";
+import { MediaImage } from "@/components/ui/media-image";
 import Link from "next/link";
 import { AnimatePresence, motion } from "motion/react";
 import { cn } from "@/lib/utils";
+import { TEMOIN_MEDIA } from "@/lib/media";
+import { SectionSeam, SEAM } from "@/components/ui/section-seam";
 import { useSectionReveal } from "@/hooks/use-section-reveal";
 
 type Offering = {
@@ -21,16 +23,16 @@ const OFFERINGS: Offering[] = [
     id: "visite",
     title: "Visite sur rendez-vous",
     description: "Découvrez le showroom, les plans et les finitions sur place.",
-    href: "/contact",
-    image: "/Allure/HD.webp",
+    href: "/rendez-vous",
+    image: TEMOIN_MEDIA.salon2,
     imageAlt: "Visite de la Résidence Allure",
   },
   {
     id: "diaspora",
     title: "Accompagnement diaspora",
     description: "Achat à distance, suivi et conseils jusqu’à la remise des clés.",
-    href: "/contact",
-    image: "/Allure/HD_137.webp",
+    href: "/rendez-vous?type=visio",
+    image: TEMOIN_MEDIA.chambre2,
     imageAlt: "Accompagnement des acquéreurs diaspora",
   },
   {
@@ -38,15 +40,15 @@ const OFFERINGS: Offering[] = [
     title: "Suivi de chantier",
     description: "Photos et jalons réguliers pour suivre l’avancement en transparence.",
     href: "/avancement",
-    image: "/Allure/HD_147.webp",
+    image: "/Allure/HD_137.webp",
     imageAlt: "Avancement du chantier Allure",
   },
   {
     id: "conseil",
     title: "Conseil personnalisé",
     description: "Une équipe dédiée pour typologie, financement et formalités.",
-    href: "/contact",
-    image: "/hero-sequence/frame_024.webp",
+    href: "/rendez-vous",
+    image: TEMOIN_MEDIA.axo1,
     imageAlt: "Conseil commercial Résidence Allure",
   },
 ];
@@ -95,12 +97,13 @@ function FloatingOfferCard({
               transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
               className="absolute inset-0"
             >
-              <Image
+              <MediaImage
                 src={offering.image}
                 alt={offering.imageAlt}
                 fill
                 sizes="220px"
                 quality={85}
+                loaderSize="sm"
                 className="object-cover"
               />
             </motion.div>
@@ -138,7 +141,7 @@ export function OfferingsSection() {
   const rowRefs = useRef<(HTMLLIElement | null)[]>([]);
   const [cardY, setCardY] = useState(0);
 
-  useSectionReveal(sectionRef);
+  useSectionReveal(sectionRef, { debugId: "offerings" });
 
   const updateCardY = () => {
     const idx = OFFERINGS.findIndex((o) => o.id === activeId);
@@ -166,9 +169,14 @@ export function OfferingsSection() {
       id="accompagnement"
       className="relative overflow-hidden bg-white py-24 lg:py-32 dark:bg-allure-petrol-deep"
     >
-      <PetalMark className="pointer-events-none absolute -left-8 top-16 h-56 w-56 text-allure-petrol/[0.04] dark:text-allure-gold/[0.06]" />
+      <SectionSeam
+        edges="top"
+        from={SEAM.white}
+        fromDark={SEAM.petrolDeep}
+      />
+      <PetalMark className="pointer-events-none absolute -left-8 top-16 z-[1] h-56 w-56 text-allure-petrol/[0.04] dark:text-allure-gold/[0.06]" />
 
-      <div className="relative mx-auto max-w-5xl px-6">
+      <div className="relative z-[2] mx-auto max-w-5xl px-6">
         <div className="mx-auto mb-16 max-w-2xl text-center">
           <span
             data-reveal="eyebrow"
@@ -294,11 +302,12 @@ export function OfferingsSection() {
                   transition={{ duration: 0.35 }}
                   className="absolute inset-0"
                 >
-                  <Image
+                  <MediaImage
                     src={active.image}
                     alt={active.imageAlt}
                     fill
                     sizes="400px"
+                    loaderSize="sm"
                     className="object-cover"
                   />
                   <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-allure-petrol-deep/55 to-transparent" />

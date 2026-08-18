@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { Resend } from "resend";
-import { SITE } from "@/lib/site";
+import { isValidEmail, sendSiteEmail } from "@/lib/mail";
+import { clientIp, rateLimit, tooManyRequests } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -13,9 +13,16 @@ type ContactBody = {
   source?: string;
 };
 
-const emailOk = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-
 export async function POST(request: Request) {
+  const limited = rateLimit(`contact:${clientIp(request)}`, {
+    limit: 5,
+    windowMs: 15 * 60 * 1000,
+  });
+  if (!limited.ok) {
+    const { body, init } = tooManyRequests(limited.retryAfter);
+    return NextResponse.json(body, init);
+  }
+
   let body: ContactBody;
   try {
     body = (await request.json()) as ContactBody;
@@ -23,7 +30,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Requête invalide." }, { status: 400 });
   }
 
-  // Honeypot rempli = bot
   if (body.company) {
     return NextResponse.json({ ok: true });
   }
@@ -46,7 +52,7 @@ export async function POST(request: Request) {
       { status: 400 }
     );
   }
-  if (!email || !emailOk(email)) {
+  if (!email || !isValidEmail(email)) {
     return NextResponse.json(
       { error: "Indiquez une adresse email valide." },
       { status: 400 }
@@ -59,57 +65,24 @@ export async function POST(request: Request) {
     );
   }
 
-  const apiKey = process.env.RESEND_API_KEY;
-  const to = process.env.CONTACT_TO_EMAIL ?? SITE.email;
-  const from =
-    process.env.CONTACT_FROM_EMAIL ?? "Résidence Allure <onboarding@resend.dev>";
+  const sent = await sendSiteEmail({
+    logLabel: "contact",
+    replyTo: email,
+    subject: `[Allure] Nouveau message — ${name}`,
+    text: [
+      `Nom : ${name}`,
+      `Téléphone : ${phone}`,
+      `Email : ${email}`,
+      `Source : ${source}`,
+      "",
+      "Message :",
+      message,
+    ].join("\n"),
+  });
 
-  if (!apiKey) {
-    console.error("[contact] RESEND_API_KEY manquant");
-    return NextResponse.json(
-      {
-        error:
-          "Le service d’envoi n’est pas configuré. Appelez-nous au " +
-          SITE.phone +
-          ".",
-      },
-      { status: 503 }
-    );
+  if (!sent.ok) {
+    return NextResponse.json({ error: sent.error }, { status: sent.status });
   }
 
-  const resend = new Resend(apiKey);
-
-  try {
-    const { error } = await resend.emails.send({
-      from,
-      to: [to],
-      replyTo: email,
-      subject: `[Allure] Nouveau message — ${name}`,
-      text: [
-        `Nom : ${name}`,
-        `Téléphone : ${phone}`,
-        `Email : ${email}`,
-        `Source : ${source}`,
-        "",
-        "Message :",
-        message,
-      ].join("\n"),
-    });
-
-    if (error) {
-      console.error("[contact] Resend error", error);
-      return NextResponse.json(
-        { error: "L’envoi a échoué. Réessayez dans un instant." },
-        { status: 502 }
-      );
-    }
-
-    return NextResponse.json({ ok: true });
-  } catch (err) {
-    console.error("[contact] unexpected", err);
-    return NextResponse.json(
-      { error: "Erreur serveur. Réessayez plus tard." },
-      { status: 500 }
-    );
-  }
+  return NextResponse.json({ ok: true });
 }

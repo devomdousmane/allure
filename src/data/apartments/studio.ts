@@ -19,7 +19,7 @@ export const STUDIO: ApartmentDetail = {
   guestToilets: 1,
   terraces: 1,
   hasStaffRoom: false,
-  price: "Sur demande",
+  price: "Dès 165M FCFA",
   highlights: [
     "81,69 m² habitables",
     "Chambre séparée 19,79 m²",

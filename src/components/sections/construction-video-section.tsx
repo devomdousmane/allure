@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
+import { MediaImage } from "@/components/ui/media-image";
 import Link from "next/link";
 import { ArrowUpRight, Pause, Play } from "lucide-react";
 import { gsap } from "gsap";
 import { Button } from "@/components/ui/button";
-import { SectionSeam, SEAM } from "@/components/ui/section-seam";
+import { HeroExitFade, SectionSeam, SEAM } from "@/components/ui/section-seam";
+import { MediaLoader } from "@/components/ui/media-loader";
 import { cn } from "@/lib/utils";
 import { useSectionReveal } from "@/hooks/use-section-reveal";
 import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
@@ -20,9 +21,11 @@ export function ConstructionVideoSection() {
   const [inView, setInView] = useState(false);
   const [shouldLoad, setShouldLoad] = useState(false);
   const [playing, setPlaying] = useState(false);
+  const [videoReady, setVideoReady] = useState(false);
   const reducedMotion = usePrefersReducedMotion();
 
   useSectionReveal(sectionRef, {
+    debugId: "constructionVideo",
     onEnter: (root) => {
       if (reducedMotion === true) return;
       const poster = root.querySelector<HTMLElement>("[data-ken-burns]");
@@ -83,36 +86,63 @@ export function ConstructionVideoSection() {
       aria-labelledby="construction-video-heading"
       className="relative overflow-hidden bg-allure-petrol-deep"
     >
-      <SectionSeam from={SEAM.white} fromDark={SEAM.petrolDeep} />
-
       <div className="relative min-h-[min(72vh,560px)] w-full sm:min-h-[min(70vh,640px)] lg:min-h-[min(75vh,720px)]">
         <div data-ken-burns className="absolute inset-0 will-change-transform">
-          <Image
+          <MediaImage
             src={POSTER_SRC}
             alt=""
             fill
             sizes="100vw"
+            loaderTone="gold"
+            loaderSize="md"
             className="object-cover"
             priority={false}
           />
         </div>
 
         {shouldLoad && reducedMotion !== true ? (
-          <video
-            ref={videoRef}
-            className="absolute inset-0 h-full w-full object-cover"
-            src={VIDEO_SRC}
-            muted
-            loop
-            playsInline
-            preload="none"
-            poster={POSTER_SRC}
-            aria-label="Vidéo du chantier Résidence Allure"
-          />
+          <>
+            <video
+              ref={videoRef}
+              className="absolute inset-0 h-full w-full object-cover"
+              src={VIDEO_SRC}
+              muted
+              loop
+              playsInline
+              preload="none"
+              poster={POSTER_SRC}
+              aria-label="Vidéo du chantier Résidence Allure"
+              onCanPlay={() => setVideoReady(true)}
+            />
+            {!videoReady ? (
+              <MediaLoader label="Chargement de la vidéo" />
+            ) : null}
+          </>
         ) : null}
 
-        <div className="absolute inset-0 bg-gradient-to-t from-allure-petrol-deep via-allure-petrol-deep/45 to-allure-petrol/25" />
-        <div className="absolute inset-0 bg-gradient-to-r from-allure-petrol-deep/50 via-transparent to-allure-petrol-deep/30" />
+        {/* Wash vidéo — bas opaque pour le texte ; haut transparent pour le fondu thème */}
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-gradient-to-t from-allure-petrol-deep via-allure-petrol-deep/45 to-transparent dark:from-allure-petrol-deep dark:via-allure-petrol-deep/55 dark:to-allure-petrol-deep/30"
+        />
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-gradient-to-r from-allure-petrol-deep/35 via-transparent to-allure-petrol-deep/20 dark:from-allure-petrol-deep/50 dark:to-allure-petrol-deep/30"
+        />
+
+        {/* Haut : blanc ← services (clair) / pétrole ← services (sombre) */}
+        <SectionSeam
+          edges="top"
+          from={SEAM.white}
+          fromDark={SEAM.petrolDeep}
+          className="h-28 sm:h-36"
+        />
+        {/* Bas : sable → amenities — fondu court en clair pour éviter le voile */}
+        <HeroExitFade
+          to={SEAM.sand}
+          toDark={SEAM.petrol}
+          className="h-20 min-h-0 sm:h-28 sm:min-h-0 dark:h-[28%] dark:min-h-32 dark:sm:min-h-40"
+        />
 
         <div className="absolute inset-0 z-[2] mx-auto flex max-w-6xl flex-col justify-end px-5 pb-14 pt-24 sm:px-6 sm:pb-16 lg:pb-20">
           <div className="max-w-xl">
@@ -146,12 +176,20 @@ export function ConstructionVideoSection() {
               <Button
                 asChild
                 size="lg"
-                className="btn-3d-gold h-12 w-full rounded-full bg-allure-gold text-allure-petrol-deep hover:bg-allure-gold/90 sm:w-auto"
+                className="btn-cta w-full sm:w-auto"
               >
                 <Link href="/avancement">
                   Voir l&rsquo;avancement
                   <ArrowUpRight className="size-4" />
                 </Link>
+              </Button>
+              <Button
+                asChild
+                size="lg"
+                variant="outline"
+                className="w-full border-allure-sand/35 bg-transparent text-allure-sand hover:bg-white/10 hover:text-allure-sand sm:w-auto"
+              >
+                <Link href="/rendez-vous">Planifier une visite</Link>
               </Button>
 
               {reducedMotion !== true ? (
@@ -160,7 +198,7 @@ export function ConstructionVideoSection() {
                   onClick={togglePlay}
                   aria-label={playing ? "Mettre en pause" : "Lire la vidéo"}
                   className={cn(
-                    "inline-flex h-12 items-center justify-center gap-2 rounded-full border border-allure-sand/30 bg-allure-petrol-deep/40 px-5 font-sans text-xs uppercase tracking-[0.16em] text-allure-sand backdrop-blur-sm transition-colors hover:border-allure-gold/50 hover:text-allure-gold sm:w-auto"
+                    "inline-flex h-10 items-center justify-center gap-2 rounded-full border border-allure-sand/30 bg-allure-petrol-deep/40 px-5 font-sans text-xs uppercase tracking-[0.16em] text-allure-sand backdrop-blur-sm transition-colors hover:border-allure-gold/50 hover:text-allure-gold sm:h-11 sm:w-auto"
                   )}
                 >
                   {playing ? (

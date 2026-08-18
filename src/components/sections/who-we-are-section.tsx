@@ -1,28 +1,38 @@
 "use client";
 
 import { useRef } from "react";
-import Image from "next/image";
-import { SectionSeam, SEAM } from "@/components/ui/section-seam";
+import { MediaImage } from "@/components/ui/media-image";
+import { SectionSharp } from "@/components/ui/section-sharp";
+import { HomeCtaRow } from "@/components/home-scroll/home-cta-row";
 import { useSectionReveal } from "@/hooks/use-section-reveal";
+import { TEMOIN_MEDIA } from "@/lib/media";
 
 const GALLERY = [
   {
-    src: "/Allure/HD_172.webp",
-    alt: "Résidence Allure — ambiance soir",
+    src: TEMOIN_MEDIA.salon1,
+    alt: "Salon — appartement témoin Allure",
   },
   {
-    src: "/Allure/HD.webp",
-    alt: "Résidence Allure — vue d’ensemble",
+    src: TEMOIN_MEDIA.chambre1,
+    alt: "Chambre — appartement témoin Allure",
   },
   {
-    src: "/Allure/HD_137.webp",
-    alt: "Résidence Allure — architecture",
+    src: TEMOIN_MEDIA.sdb1,
+    alt: "Salle de bain — appartement témoin Allure",
   },
 ] as const;
 
+/**
+ * Étape debug 1 — reveal standard via `useSectionReveal` uniquement
+ * (pas de skipDefaults / timeline custom).
+ */
 export function WhoWeAreSection() {
   const sectionRef = useRef<HTMLElement>(null);
-  useSectionReveal(sectionRef);
+
+  useSectionReveal(sectionRef, {
+    debugId: "whoWeAre",
+    start: "top 70%",
+  });
 
   return (
     <section
@@ -30,10 +40,13 @@ export function WhoWeAreSection() {
       id="qui-sommes-nous"
       className="relative bg-white pb-6 pt-20 lg:pb-8 lg:pt-28 dark:bg-allure-petrol-deep"
     >
-      {/* Hero → blanc / petrol-deep */}
-      <SectionSeam from={SEAM.sand} fromDark={SEAM.petrolDeep} />
-
-      <div className="relative z-[2] mx-auto max-w-4xl px-6 text-center">
+      <SectionSharp
+        edge="top"
+        mode="line"
+        variant="fold"
+        className="h-8 sm:h-9 lg:h-10"
+      />
+      <div className="relative z-[2] mx-auto max-w-4xl px-6 pt-4 text-center sm:pt-5">
         <span
           data-reveal="eyebrow"
           className="inline-flex items-center gap-2 rounded-full border border-allure-petrol/10 bg-allure-sand px-4 py-1.5 font-sans text-xs text-allure-petrol/70 dark:border-allure-sand/15 dark:bg-white/5 dark:text-allure-sand/70"
@@ -48,25 +61,25 @@ export function WhoWeAreSection() {
           className="mt-8 font-heading text-2xl leading-[1.45] text-allure-ink/40 sm:text-3xl lg:text-[2.15rem] lg:leading-[1.4] dark:text-allure-sand/40"
         >
           Nous sommes une équipe passionnée qui crée des espaces{" "}
-          <span className="font-semibold text-allure-petrol dark:text-allure-sand">
+          <strong className="font-semibold text-allure-petrol dark:text-allure-sand">
             pensés, durables
-          </span>{" "}
+          </strong>{" "}
           et{" "}
-          <span className="font-semibold text-allure-petrol dark:text-allure-sand">
+          <strong className="font-semibold text-allure-petrol dark:text-allure-sand">
             inspirants
-          </span>
+          </strong>
           . De la visite à la remise des clés, nous agissons avec{" "}
-          <span className="font-semibold text-allure-petrol dark:text-allure-sand">
+          <strong className="font-semibold text-allure-petrol dark:text-allure-sand">
             exigence
-          </span>{" "}
+          </strong>{" "}
           et{" "}
-          <span className="font-semibold text-allure-petrol dark:text-allure-sand">
+          <strong className="font-semibold text-allure-petrol dark:text-allure-sand">
             précision
-          </span>{" "}
+          </strong>{" "}
           pour donner vie à{" "}
-          <span className="font-semibold text-allure-petrol dark:text-allure-sand">
+          <strong className="font-semibold text-allure-petrol dark:text-allure-sand">
             votre projet aux Almadies.
-          </span>
+          </strong>
         </p>
 
         <div className="mt-12 flex justify-center gap-3 sm:gap-5 lg:mt-14">
@@ -75,23 +88,31 @@ export function WhoWeAreSection() {
               key={img.src}
               data-reveal="media"
               className="relative h-28 w-[30%] max-w-[200px] overflow-hidden rounded-2xl sm:h-36 lg:h-40"
-              style={{
-                transform: i === 1 ? "translateY(8px)" : undefined,
-              }}
+              style={{ transform: i === 1 ? "translateY(8px)" : undefined }}
             >
-              <Image
+              <MediaImage
                 src={img.src}
                 alt={img.alt}
                 fill
                 sizes="180px"
+                loaderSize="sm"
                 className="object-cover"
               />
             </div>
           ))}
         </div>
+
+        <div data-reveal="item" className="mt-10 lg:mt-12">
+          <HomeCtaRow
+            primary={{ label: "Planifier une visite", href: "/rendez-vous" }}
+            secondary={{
+              label: "Voir les appartements témoins",
+              href: "/appartements-temoins",
+            }}
+          />
+        </div>
       </div>
 
-      {/* Transition vers Nos atouts */}
       <div
         data-reveal="item"
         className="mx-auto mt-16 flex max-w-6xl items-center gap-3 px-6 lg:mt-20"

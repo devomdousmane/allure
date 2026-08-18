@@ -1,17 +1,39 @@
 export const SITE = {
   name: "Résidence Allure",
   tagline: "L'élégance aux Almadies",
-  url: "https://residenceallure.com",
+  url: "https://residence-allure.com",
   description:
     "Programme immobilier de standing au cœur des Almadies, Dakar. Appartements lumineux, prestations d'exception, livraison 2026.",
+  keywords: [
+    "Résidence Allure",
+    "appartements Almadies",
+    "immobilier Dakar",
+    "acheter appartement Dakar",
+    "programme immobilier Almadies",
+    "appartements témoins Dakar",
+    "diaspora Sénégal immobilier",
+    "appartement neuf Dakar 2026",
+    "résidence standing Almadies",
+    "investissement immobilier Sénégal",
+    "studio Almadies",
+    "visite 3D appartement Dakar",
+  ],
+  ogImage: "/media/hero-cinematic/opening.webp",
+  ogImageWidth: 1920,
+  ogImageHeight: 1080,
   phone: "+221 78 595 66 66",
   phoneHref: "tel:+221785956666",
-  email: "office@residenceallure.com",
-  emailHref: "mailto:office@residenceallure.com",
+  email: "office@residence-allure.com",
+  emailHref: "mailto:office@residence-allure.com",
   address: "Route des Almadies, Dakar, Sénégal",
   priceFrom: "165M FCFA",
   delivery: "2026",
-  logo: "/logo/allure-logo.webp",
+  /** Logo clair — texte sombre, fond transparent */
+  logoLight: "/logo/logo-allure-light.webp",
+  /** Logo sombre — texte argenté, fond transparent */
+  logoDark: "/logo/logo-allure-dark.webp",
+  /** Alias — version claire (rétrocompat) */
+  logo: "/logo/logo-allure-light.webp",
   logoMark: "/logo/allure-mark.webp",
   coords: {
     lng: -17.519,
@@ -31,4 +53,15 @@ export const SITE = {
       label: "Twitter",
     },
   ],
+} as const;
+
+export function getSiteUrl() {
+  return process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ?? SITE.url;
+}
+
+export const OG_IMAGE = {
+  url: SITE.ogImage,
+  width: SITE.ogImageWidth,
+  height: SITE.ogImageHeight,
+  alt: `${SITE.name} — ${SITE.tagline}`,
 } as const;

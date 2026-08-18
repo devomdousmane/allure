@@ -2,23 +2,29 @@ import type { Metadata, Viewport } from "next";
 import { Cinzel, Josefin_Sans } from "next/font/google";
 import { SmoothScrollProvider } from "@/components/layout/smooth-scroll-provider";
 import { ThemeProvider } from "@/components/layout/theme-provider";
-import { SITE } from "@/lib/site";
+import { CustomCursor } from "@/components/layout/custom-cursor";
+import { SiteLoader } from "@/components/layout/site-loader";
+import { SkipToContent } from "@/components/layout/skip-to-content";
+import { CookieConsentProvider } from "@/components/legal/cookie-consent-provider";
+import { SITE, OG_IMAGE, getSiteUrl } from "@/lib/site";
+import { JsonLd, organizationJsonLd, webSiteJsonLd } from "@/components/seo/json-ld";
 import "./globals.css";
 
 const cinzel = Cinzel({
   variable: "--font-heading",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
+  display: "swap",
 });
 
 const josefinSans = Josefin_Sans({
   variable: "--font-sans",
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
+  display: "swap",
 });
 
-const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ?? SITE.url;
+const siteUrl = getSiteUrl();
 
 export const viewport: Viewport = {
   themeColor: [
@@ -34,6 +40,17 @@ export const metadata: Metadata = {
     template: `%s — ${SITE.name}`,
   },
   description: SITE.description,
+  keywords: [...SITE.keywords],
+  authors: [{ name: SITE.name, url: siteUrl }],
+  creator: SITE.name,
+  publisher: SITE.name,
+  category: "real estate",
+  applicationName: SITE.name,
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
   icons: {
     icon: [
       { url: "/favicon/favicon.ico", sizes: "48x48" },
@@ -55,32 +72,38 @@ export const metadata: Metadata = {
   manifest: "/favicon/site.webmanifest",
   alternates: {
     canonical: "/",
+    languages: {
+      "fr-SN": siteUrl,
+      fr: siteUrl,
+    },
   },
   openGraph: {
     type: "website",
     locale: "fr_SN",
+    alternateLocale: ["fr_FR"],
     url: siteUrl,
     siteName: SITE.name,
     title: `${SITE.name} — ${SITE.tagline}`,
     description: SITE.description,
-    images: [
-      {
-        url: "/hero-sequence/frame_024.webp",
-        width: 1200,
-        height: 630,
-        alt: SITE.name,
-      },
-    ],
+    countryName: "Sénégal",
+    images: [OG_IMAGE],
   },
   twitter: {
     card: "summary_large_image",
     title: `${SITE.name} — ${SITE.tagline}`,
     description: SITE.description,
-    images: ["/hero-sequence/frame_024.webp"],
+    images: [SITE.ogImage],
   },
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
   },
 };
 
@@ -91,13 +114,28 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="fr"
-      className={`${cinzel.variable} ${josefinSans.variable} h-full antialiased`}
+      lang="fr-SN"
+      className={`${cinzel.variable} ${josefinSans.variable} hide-native-scrollbar h-full antialiased`}
       suppressHydrationWarning
     >
+      <head>
+        <link
+          rel="preload"
+          as="image"
+          href="/media/hero-cinematic/opening.webp"
+        />
+      </head>
       <body className="flex min-h-full flex-col bg-background text-foreground">
+        <JsonLd data={[organizationJsonLd(), webSiteJsonLd()]} />
         <ThemeProvider>
-          <SmoothScrollProvider>{children}</SmoothScrollProvider>
+          <CookieConsentProvider>
+            <SiteLoader />
+            <SmoothScrollProvider>
+              <SkipToContent />
+              <CustomCursor />
+              {children}
+            </SmoothScrollProvider>
+          </CookieConsentProvider>
         </ThemeProvider>
       </body>
     </html>
