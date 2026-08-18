@@ -61,8 +61,6 @@ public/video/video-2.MOV
 public/video/scrolling-allure-1080p.mp4
 public/video/frame-videos/video-1.mp4
 public/video/frame-videos/video-2.mp4
-# >100 Mo — GitHub refuse ; garder en local / CDN
-public/video/compressed/contruction.mp4
 public/Allure/*.MOV
 public/appartement-temoins-1/
 public/appatement-temoins/
