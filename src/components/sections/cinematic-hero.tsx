@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { motion, useMotionValue, useTransform } from "motion/react";
+import { motion, useMotionValue, useTransform, type MotionValue } from "motion/react";
 import { SectionSharp, SHARP } from "@/components/ui/section-sharp";
 import { HeroExitFade } from "@/components/ui/section-seam";
 import { MediaLoader } from "@/components/ui/media-loader";
@@ -12,6 +12,7 @@ import { registerGsap } from "@/lib/gsap/register";
 import { DURATION, EASE } from "@/lib/gsap/presets";
 import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
 import { cn } from "@/lib/utils";
+import { useLenis } from "@/components/layout/smooth-scroll-provider";
 import { emitHeroPinActive, getHeroPinEnd, getHeroPinMetrics } from "@/lib/hero-pin";
 
 registerGsap();
@@ -76,6 +77,126 @@ function beatIndexForProgress(p: number) {
   return 0;
 }
 
+const RAIL_MASK =
+  "linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%)";
+
+function findHeroPinTrigger() {
+  return ScrollTrigger.getAll().find((trigger) => {
+    const el = trigger.trigger;
+    return el instanceof HTMLElement && el.hasAttribute("data-cinematic-hero");
+  });
+}
+
+function HeroSceneRail({
+  progress,
+  beatIndex,
+}: {
+  progress: MotionValue<number>;
+  beatIndex: number;
+}) {
+  const lenis = useLenis();
+  const fillHeight = useTransform(progress, (p) => `${6 + p * 94}%`);
+  const railOpacity = useTransform(progress, [0, 0.9, 1], [1, 1, 0.55]);
+  const veilOpacity = useTransform(progress, [0, 0.45, 1], [1, 0.82, 0.48]);
+
+  function goToBeat(from: number) {
+    const st = findHeroPinTrigger();
+    if (!st) return;
+    const { animRatio } = getHeroPinMetrics();
+    const y = st.start + from * animRatio * (st.end - st.start);
+    if (lenis) lenis.scrollTo(y, { duration: 1.15 });
+    else window.scrollTo({ top: y, behavior: "smooth" });
+  }
+
+  return (
+    <motion.nav
+      style={{ opacity: railOpacity }}
+      aria-label="Scènes de l'introduction"
+      className="pointer-events-none absolute inset-y-0 right-0 z-20 hidden w-44 md:block lg:w-52"
+    >
+      <motion.div aria-hidden style={{ opacity: veilOpacity }} className="absolute inset-0">
+        <div className="absolute inset-y-0 right-0 w-full bg-gradient-to-l from-allure-petrol-deep/80 via-allure-petrol/35 to-transparent" />
+        <div className="absolute inset-y-[10%] right-0 w-20 bg-gradient-to-l from-allure-gold/22 via-allure-gold/8 to-transparent" />
+        <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-allure-petrol-deep/55 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/45 via-allure-petrol-deep/25 to-transparent" />
+      </motion.div>
+
+      <div
+        className="absolute top-1/2 right-5 h-[min(54vh,24rem)] w-[calc(100%-1.25rem)] -translate-y-1/2 lg:right-7"
+        style={{
+          maskImage: RAIL_MASK,
+          WebkitMaskImage: RAIL_MASK,
+        }}
+      >
+        <div className="absolute inset-y-0 right-[3px] w-px" aria-hidden>
+          <span className="absolute inset-0 bg-gradient-to-b from-allure-sand/0 via-allure-sand/30 to-allure-petrol/10" />
+          <motion.span
+            className="absolute inset-x-0 top-0 origin-top bg-gradient-to-b from-allure-gold/35 via-allure-gold to-[color-mix(in_oklab,var(--allure-gold)_50%,var(--allure-sand))] shadow-[0_0_14px_color-mix(in_oklab,var(--allure-gold)_42%,transparent)]"
+            style={{ height: fillHeight }}
+          />
+          <motion.span
+            className="absolute left-1/2 z-[1] h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-allure-gold shadow-[0_0_16px_color-mix(in_oklab,var(--allure-gold)_75%,transparent)]"
+            style={{ top: fillHeight }}
+          />
+        </div>
+
+        <ol className="relative z-[1] flex h-full flex-col justify-between py-0.5">
+          {BEATS.map((scene, index) => {
+            const active = beatIndex === index;
+            const passed = beatIndex > index;
+            return (
+              <li key={scene.id} className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => goToBeat(scene.from)}
+                  aria-current={active ? "true" : undefined}
+                  aria-label={`Scène ${index + 1} — ${scene.label}`}
+                  className="group pointer-events-auto flex cursor-pointer items-center justify-end gap-3"
+                >
+                  <span className="flex flex-col items-end gap-0.5">
+                    <span
+                      className={cn(
+                        "font-heading text-[10px] tabular-nums tracking-[0.14em] transition-colors duration-500",
+                        active
+                          ? "text-allure-gold"
+                          : "text-allure-sand/35 group-hover:text-allure-sand/70"
+                      )}
+                    >
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <span
+                      className={cn(
+                        "hidden max-w-[7rem] truncate text-right font-sans text-[10px] uppercase tracking-[0.2em] transition-all duration-500 lg:inline",
+                        active
+                          ? "text-allure-gold opacity-100"
+                          : passed
+                            ? "text-allure-sand/60 opacity-90 group-hover:text-allure-gold/90"
+                            : "text-allure-sand/40 opacity-75 group-hover:text-allure-sand group-hover:opacity-100"
+                      )}
+                    >
+                      {scene.label}
+                    </span>
+                  </span>
+                  <span
+                    className={cn(
+                      "relative z-[1] block h-2 w-2 shrink-0 rounded-full transition-all duration-500",
+                      active
+                        ? "scale-125 bg-allure-gold shadow-[0_0_12px_color-mix(in_oklab,var(--allure-gold)_70%,transparent)] ring-[3px] ring-allure-gold/30"
+                        : passed
+                          ? "bg-allure-gold/75 ring-2 ring-allure-sand/25"
+                          : "bg-allure-sand/40 ring-2 ring-allure-sand/20 group-hover:bg-allure-gold/80"
+                    )}
+                  />
+                </button>
+              </li>
+            );
+          })}
+        </ol>
+      </div>
+    </motion.nav>
+  );
+}
+
 export function CinematicHero() {
   const sectionRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -112,19 +233,6 @@ export function CinematicHero() {
   const textOpacity = useTransform(progress, [0, 0.42, 0.62], [1, 1, 0]);
   const bandOpacity = useTransform(progress, [0, 0.55, 1], [1, 0.7, 0.45]);
   const hintOpacity = useTransform(progress, [0, 0.04, 0.12], [1, 1, 0]);
-  const arcOpacity = useTransform(
-    progress,
-    [0, ORBIT_END - 0.04, ORBIT_END + 0.02],
-    [1, 1, 0]
-  );
-  const lineOpacity = useTransform(
-    progress,
-    [ORBIT_END - 0.02, ORBIT_END + 0.04],
-    [0, 1]
-  );
-  const arcDegrees = useTransform(progress, [0, ORBIT_END], [0, 340]);
-  const linePct = useTransform(progress, [ORBIT_END, 1], [0, 100]);
-  const arcLength = useTransform(arcDegrees, (deg) => (deg / 360) * 351.86);
 
   const beat = BEATS[beatIndex];
   const textReadyClass = reduced === true ? "opacity-100" : "opacity-0";
@@ -660,45 +768,7 @@ export function CinematicHero() {
         </div>
       </motion.div>
 
-      <div className="pointer-events-none absolute right-5 top-1/2 z-10 hidden -translate-y-1/2 sm:block lg:right-9">
-        <motion.svg
-          width="34"
-          height="120"
-          viewBox="0 0 34 120"
-          style={{ opacity: arcOpacity }}
-          className="absolute inset-0"
-          aria-hidden
-        >
-          <path
-            d="M17,4 A56,56 0 0 1 17,116"
-            fill="none"
-            stroke="rgba(246,241,231,0.16)"
-            strokeWidth="1.4"
-          />
-          <motion.path
-            d="M17,4 A56,56 0 0 1 17,116"
-            fill="none"
-            stroke="var(--allure-gold)"
-            strokeWidth="1.4"
-            strokeLinecap="round"
-            style={{
-              strokeDasharray: 351.86,
-              strokeDashoffset: useTransform(arcLength, (len) => 351.86 - len),
-            }}
-          />
-        </motion.svg>
-
-        <motion.div
-          style={{ opacity: lineOpacity }}
-          className="absolute inset-0 h-[120px] w-px bg-white/16"
-          aria-hidden
-        >
-          <motion.div
-            style={{ height: useTransform(linePct, (v) => `${v}%`) }}
-            className="absolute inset-x-0 top-0 bg-allure-gold"
-          />
-        </motion.div>
-      </div>
+      <HeroSceneRail progress={progress} beatIndex={beatIndex} />
 
       <motion.div
         ref={hintRef}

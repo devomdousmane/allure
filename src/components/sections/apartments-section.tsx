@@ -175,7 +175,7 @@ export function ApartmentsSection() {
       className="relative bg-allure-sand py-24 lg:py-32 dark:bg-allure-petrol"
       style={{ perspective: "1400px" }}
     >
-      <SectionSeam edges="top" from={SEAM.petrolDeep} fromDark={SEAM.petrolDeep} />
+      <SectionSeam edges="top" from={SEAM.sand} fromDark={SEAM.petrolDeep} />
       <div className="relative z-[2] mx-auto max-w-[90rem] px-5 sm:px-8 lg:px-10">
         <div className="mb-10 flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-end lg:mb-12">
           <div className="max-w-2xl">
