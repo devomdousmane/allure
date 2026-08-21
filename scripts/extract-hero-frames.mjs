@@ -73,33 +73,71 @@ async function probeDuration(file) {
 }
 
 async function resolveOpeningSource() {
+  const luxury = path.join(
+    root,
+    "public",
+    "apartments",
+    "type-a",
+    "gallery-liv-01.webp"
+  );
+  try {
+    await fs.access(luxury);
+    return { type: "image", file: luxury };
+  } catch {
+    /* fall through */
+  }
+  const facade = path.join(root, "public", "Allure", "DJI_0250.webp");
+  try {
+    await fs.access(facade);
+    return { type: "image", file: facade };
+  } catch {
+    /* fall through */
+  }
   const video = path.join(videoDir, "video-3.mp4");
   await fs.access(video);
-  return video;
+  return { type: "video", file: video };
 }
 
 async function exportOpeningStill(tmpDir) {
-  const png = path.join(tmpDir, "opening.png");
   const dest = path.join(outDir, "opening.webp");
   let input;
   try {
     input = await resolveOpeningSource();
   } catch {
-    console.log("Pas de video-3.mp4 — opening.webp inchangé.");
+    console.log("Pas de DJI_0250 / video-3 — opening.webp inchangé.");
     return;
   }
-  console.log(`Plan d’ouverture — 1re frame de video-3 (${path.basename(input)})…`);
+
+  const staged = path.join(tmpDir, "opening.webp");
+  if (input.type === "image") {
+    console.log(`Plan d’ouverture — façade ${path.basename(input.file)}…`);
+    const meta = await sharp(input.file)
+      .rotate()
+      .resize({ width: 1920, height: 1080, fit: "cover", position: "centre" })
+      .webp({ quality: 86 })
+      .toFile(staged);
+    try {
+      await fs.copyFile(staged, dest);
+    } catch {
+      await fs.unlink(dest).catch(() => {});
+      await fs.copyFile(staged, dest);
+    }
+    console.log(`  opening.webp → ${meta.width}×${meta.height}`);
+    return;
+  }
+
+  const png = path.join(tmpDir, "opening.png");
+  console.log(`Plan d’ouverture — 1re frame de video-3 (${path.basename(input.file)})…`);
   await run("ffmpeg", [
     "-y",
     "-i",
-    input,
+    input.file,
     "-frames:v",
     "1",
     "-update",
     "1",
     png,
   ]);
-  const staged = path.join(tmpDir, "opening.webp");
   const meta = await sharp(png)
     .rotate()
     .resize({ width: 1920, height: 1080, fit: "cover" })

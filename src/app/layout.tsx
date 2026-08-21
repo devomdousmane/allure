@@ -123,6 +123,13 @@ export default function RootLayout({
           rel="preload"
           as="image"
           href="/media/hero-cinematic/opening.webp"
+          fetchPriority="high"
+        />
+        <link
+          rel="preload"
+          as="image"
+          href="/media/hero-cinematic/frame_001.webp"
+          media="(max-width: 768px)"
         />
       </head>
       <body className="flex min-h-full flex-col bg-background text-foreground">

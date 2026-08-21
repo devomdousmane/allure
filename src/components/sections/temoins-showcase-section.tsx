@@ -81,7 +81,7 @@ export function TemoinsShowcaseSection() {
             <p
               data-split="lines,words"
               data-split-animate="words"
-              className="mt-5 max-w-md font-sans text-sm leading-relaxed text-allure-ink/65 dark:text-white/65"
+              className="mt-5 max-w-md font-sans text-base leading-relaxed text-allure-ink/80 dark:text-white/80"
             >
               Les appartements témoins vous montrent les volumes, la lumière et
               les finitions — en galerie et en visite 3D. Le meilleur moyen de
@@ -110,7 +110,7 @@ export function TemoinsShowcaseSection() {
             <div data-reveal="item" className="mt-10 flex flex-col gap-3 sm:flex-row">
               <Button asChild size="lg" className="btn-cta">
                 <Link href="/appartements-temoins">
-                  Voir les témoins
+                  Voir nos appartements témoins
                   <ArrowUpRight className="size-4" aria-hidden />
                 </Link>
               </Button>

@@ -15,6 +15,7 @@
     "temoins:optimize": "node scripts/optimize-temoins.mjs",
     "hero:frames": "node scripts/extract-hero-frames.mjs",
     "hero:frames:optimize": "node scripts/optimize-hero-frames.mjs --half",
+    "og:generate": "node scripts/generate-og.mjs",
     "hero:webm": "node scripts/build-hero-webm.mjs",
     "favicons:generate": "node scripts/generate-favicons.mjs"
   },

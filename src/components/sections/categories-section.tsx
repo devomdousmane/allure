@@ -230,7 +230,7 @@ export function CategoriesSection() {
           <p
             data-split="lines,words"
             data-split-animate="words"
-            className="mt-4 font-sans text-sm text-allure-ink/55 dark:text-allure-sand/55"
+            className="mt-4 font-sans text-base leading-relaxed text-allure-ink/75 dark:text-allure-sand/80 sm:text-lg"
           >
             Une mosaïque des appartements témoins — salons, chambres, cuisines et
             salles de bain, tels qu’ils se vivent.
@@ -269,14 +269,14 @@ export function CategoriesSection() {
           data-reveal="item"
           className="mx-auto mt-14 max-w-xl text-center lg:mt-20"
         >
-          <p className="font-sans text-sm text-allure-ink/55 dark:text-allure-sand/55">
+          <p className="font-sans text-base leading-relaxed text-allure-ink/75 dark:text-allure-sand/80">
             Ces vues sont celles de nos appartements témoins — visitez-les en
             images, puis sur place.
           </p>
           <HomeCtaRow
             className="mt-6"
             primary={{
-              label: "Visiter les témoins",
+              label: "Voir nos appartements témoins",
               href: "/appartements-temoins",
             }}
             secondary={{

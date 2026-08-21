@@ -7,7 +7,6 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { motion, useMotionValue, useTransform, type MotionValue } from "motion/react";
 import { SectionSharp, SHARP } from "@/components/ui/section-sharp";
 import { HeroExitFade } from "@/components/ui/section-seam";
-import { MediaLoader } from "@/components/ui/media-loader";
 import { registerGsap } from "@/lib/gsap/register";
 import { DURATION, EASE } from "@/lib/gsap/presets";
 import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
@@ -20,7 +19,6 @@ registerGsap();
 const OPENING_STILL = "/media/hero-cinematic/opening.webp";
 /** MP4 en premier : plus léger que le WebM actuel, seek H.264 plus fiable pour le scrub. */
 const HERO_MP4 = "/media/hero-cinematic/hero.mp4";
-const HERO_WEBM = "/media/hero-cinematic/hero.webm";
 /** Séquence WebP — iOS / mobile : seek vidéo `currentTime` trop irrégulier. */
 const FRAME_COUNT = 60;
 const frameSrc = (index: number) =>
@@ -77,9 +75,6 @@ function beatIndexForProgress(p: number) {
   return 0;
 }
 
-const RAIL_MASK =
-  "linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%)";
-
 function findHeroPinTrigger() {
   return ScrollTrigger.getAll().find((trigger) => {
     const el = trigger.trigger;
@@ -95,9 +90,8 @@ function HeroSceneRail({
   beatIndex: number;
 }) {
   const lenis = useLenis();
-  const fillHeight = useTransform(progress, (p) => `${6 + p * 94}%`);
-  const railOpacity = useTransform(progress, [0, 0.9, 1], [1, 1, 0.55]);
-  const veilOpacity = useTransform(progress, [0, 0.45, 1], [1, 0.82, 0.48]);
+  const fillHeight = useTransform(progress, (p) => `${8 + p * 92}%`);
+  const railOpacity = useTransform(progress, [0, 0.92, 1], [1, 1, 0.4]);
 
   function goToBeat(from: number) {
     const st = findHeroPinTrigger();
@@ -112,66 +106,56 @@ function HeroSceneRail({
     <motion.nav
       style={{ opacity: railOpacity }}
       aria-label="Scènes de l'introduction"
-      className="pointer-events-none absolute inset-y-0 right-0 z-20 hidden w-44 md:block lg:w-52"
+      className="pointer-events-none absolute inset-y-0 right-0 z-20 hidden md:block"
     >
-      <motion.div aria-hidden style={{ opacity: veilOpacity }} className="absolute inset-0">
-        <div className="absolute inset-y-0 right-0 w-full bg-gradient-to-l from-allure-petrol-deep/80 via-allure-petrol/35 to-transparent" />
-        <div className="absolute inset-y-[10%] right-0 w-20 bg-gradient-to-l from-allure-gold/22 via-allure-gold/8 to-transparent" />
-        <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-allure-petrol-deep/55 to-transparent" />
-        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/45 via-allure-petrol-deep/25 to-transparent" />
-      </motion.div>
-
       <div
-        className="absolute top-1/2 right-5 h-[min(54vh,24rem)] w-[calc(100%-1.25rem)] -translate-y-1/2 lg:right-7"
-        style={{
-          maskImage: RAIL_MASK,
-          WebkitMaskImage: RAIL_MASK,
-        }}
-      >
-        <div className="absolute inset-y-0 right-[3px] w-px" aria-hidden>
-          <span className="absolute inset-0 bg-gradient-to-b from-allure-sand/0 via-allure-sand/30 to-allure-petrol/10" />
-          <motion.span
-            className="absolute inset-x-0 top-0 origin-top bg-gradient-to-b from-allure-gold/35 via-allure-gold to-[color-mix(in_oklab,var(--allure-gold)_50%,var(--allure-sand))] shadow-[0_0_14px_color-mix(in_oklab,var(--allure-gold)_42%,transparent)]"
-            style={{ height: fillHeight }}
-          />
-          <motion.span
-            className="absolute left-1/2 z-[1] h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-allure-gold shadow-[0_0_16px_color-mix(in_oklab,var(--allure-gold)_75%,transparent)]"
-            style={{ top: fillHeight }}
-          />
-        </div>
+        aria-hidden
+        className="absolute inset-y-0 right-0 w-36 bg-gradient-to-l from-black/50 via-black/20 to-transparent lg:w-44"
+      />
 
-        <ol className="relative z-[1] flex h-full flex-col justify-between py-0.5">
+      <div className="absolute top-1/2 right-4 flex -translate-y-1/2 flex-col items-end gap-0 lg:right-6">
+        <ol className="relative flex flex-col gap-7 py-2 pr-4">
+          <span
+            aria-hidden
+            className="absolute top-3 right-[7px] bottom-3 w-px bg-white/20"
+          >
+            <motion.span
+              className="absolute inset-x-0 top-0 origin-top bg-allure-gold"
+              style={{ height: fillHeight }}
+            />
+          </span>
+
           {BEATS.map((scene, index) => {
             const active = beatIndex === index;
             const passed = beatIndex > index;
             return (
-              <li key={scene.id} className="flex justify-end">
+              <li key={scene.id} className="relative z-[1] flex justify-end">
                 <button
                   type="button"
                   onClick={() => goToBeat(scene.from)}
                   aria-current={active ? "true" : undefined}
                   aria-label={`Scène ${index + 1} — ${scene.label}`}
-                  className="group pointer-events-auto flex cursor-pointer items-center justify-end gap-3"
+                  className="group pointer-events-auto flex cursor-pointer items-center gap-3"
                 >
                   <span className="flex flex-col items-end gap-0.5">
                     <span
                       className={cn(
-                        "font-heading text-[10px] tabular-nums tracking-[0.14em] transition-colors duration-500",
+                        "font-heading text-[10px] tabular-nums tracking-[0.16em] transition-colors duration-300",
                         active
                           ? "text-allure-gold"
-                          : "text-allure-sand/35 group-hover:text-allure-sand/70"
+                          : "text-white/35 group-hover:text-white/70"
                       )}
                     >
                       {String(index + 1).padStart(2, "0")}
                     </span>
                     <span
                       className={cn(
-                        "hidden max-w-[7rem] truncate text-right font-sans text-[10px] uppercase tracking-[0.2em] transition-all duration-500 lg:inline",
+                        "max-w-[6.5rem] text-right font-sans text-[10px] uppercase tracking-[0.18em] transition-colors duration-300",
                         active
-                          ? "text-allure-gold opacity-100"
+                          ? "text-white"
                           : passed
-                            ? "text-allure-sand/60 opacity-90 group-hover:text-allure-gold/90"
-                            : "text-allure-sand/40 opacity-75 group-hover:text-allure-sand group-hover:opacity-100"
+                            ? "text-white/55 group-hover:text-allure-gold/90"
+                            : "text-white/40 group-hover:text-white/75"
                       )}
                     >
                       {scene.label}
@@ -179,12 +163,12 @@ function HeroSceneRail({
                   </span>
                   <span
                     className={cn(
-                      "relative z-[1] block h-2 w-2 shrink-0 rounded-full transition-all duration-500",
+                      "relative block h-2.5 w-2.5 shrink-0 rounded-full border transition-all duration-300",
                       active
-                        ? "scale-125 bg-allure-gold shadow-[0_0_12px_color-mix(in_oklab,var(--allure-gold)_70%,transparent)] ring-[3px] ring-allure-gold/30"
+                        ? "scale-110 border-allure-gold bg-allure-gold"
                         : passed
-                          ? "bg-allure-gold/75 ring-2 ring-allure-sand/25"
-                          : "bg-allure-sand/40 ring-2 ring-allure-sand/20 group-hover:bg-allure-gold/80"
+                          ? "border-allure-gold/70 bg-allure-gold/80"
+                          : "border-white/40 bg-transparent group-hover:border-allure-gold/80"
                     )}
                   />
                 </button>
@@ -215,7 +199,6 @@ export function CinematicHero() {
   const seekingRef = useRef(false);
 
   const [ready, setReady] = useState(false);
-  const [waiting, setWaiting] = useState(true);
   const [beatIndex, setBeatIndex] = useState(0);
   const [isMobile, setIsMobile] = useState<boolean | null>(null);
   const reduced = usePrefersReducedMotion();
@@ -235,8 +218,8 @@ export function CinematicHero() {
   const hintOpacity = useTransform(progress, [0, 0.04, 0.12], [1, 1, 0]);
 
   const beat = BEATS[beatIndex];
-  const textReadyClass = reduced === true ? "opacity-100" : "opacity-0";
   const hasHeadline = beat.headline.length > 0;
+  /** Poster visible tant que le média scrub n’est pas prêt — pas de spinner bloquant. */
   const showStaticFallback = reduced === true || !ready;
 
   useEffect(() => {
@@ -245,12 +228,10 @@ export function CinematicHero() {
     if (!video) return;
 
     let settled = false;
-    const stopWaiting = () => setWaiting(false);
     const markReady = () => {
       if (settled) return;
       settled = true;
       setReady(true);
-      setWaiting(false);
     };
 
     const onReady = () => {
@@ -260,13 +241,14 @@ export function CinematicHero() {
     if (video.readyState >= 2) onReady();
     video.addEventListener("loadeddata", onReady);
     video.addEventListener("canplay", onReady);
-    video.addEventListener("error", stopWaiting);
-    const timeout = window.setTimeout(stopWaiting, 3500);
+    video.addEventListener("error", markReady);
+    // Ne pas bloquer l’UI : le poster reste jusqu’à la 1re frame vidéo.
+    const timeout = window.setTimeout(markReady, 1800);
 
     return () => {
       video.removeEventListener("loadeddata", onReady);
       video.removeEventListener("canplay", onReady);
-      video.removeEventListener("error", stopWaiting);
+      video.removeEventListener("error", markReady);
       window.clearTimeout(timeout);
     };
   }, [isMobile, reduced]);
@@ -282,6 +264,13 @@ export function CinematicHero() {
       new Promise<void>((resolve) => {
         const img = new Image();
         img.decoding = "async";
+        if (i < 3) {
+          try {
+            img.fetchPriority = "high";
+          } catch {
+            /* older browsers */
+          }
+        }
         img.onload = () => resolve();
         img.onerror = () => resolve();
         img.src = frameSrc(i);
@@ -289,25 +278,32 @@ export function CinematicHero() {
       });
 
     const run = async () => {
+      // Afficher dès la 1re frame — le reste en arrière-plan sans bloquer.
       await loadOne(0);
       if (cancelled) return;
       setReady(true);
-      setWaiting(false);
-      const batch = 6;
-      for (let i = 1; i < FRAME_COUNT && !cancelled; i += batch) {
+
+      const warm = [1, 2, 3, 4, 5].filter((i) => i < FRAME_COUNT);
+      await Promise.all(warm.map((i) => loadOne(i)));
+      if (cancelled) return;
+
+      const batch = 4;
+      for (let i = warm.length + 1; i < FRAME_COUNT && !cancelled; i += batch) {
         const end = Math.min(FRAME_COUNT, i + batch);
         await Promise.all(
           Array.from({ length: end - i }, (_, k) => loadOne(i + k))
+        );
+        // Laisse le main thread respirer entre lots.
+        await new Promise<void>((r) =>
+          window.setTimeout(r, 0)
         );
       }
     };
 
     void run();
-    const timeout = window.setTimeout(() => setWaiting(false), 2800);
 
     return () => {
       cancelled = true;
-      window.clearTimeout(timeout);
     };
   }, [isMobile, reduced]);
 
@@ -508,16 +504,25 @@ export function CinematicHero() {
         Boolean
       ) as HTMLElement[];
 
-      if (reduced) {
+      const revealAll = () => {
         gsap.set(nodes, { autoAlpha: 1, clearProps: "transform" });
         introDoneRef.current = true;
+      };
+
+      if (reduced) {
+        revealAll();
         return;
       }
 
-      gsap.set(nodes, { autoAlpha: 0 });
+      // Contenu déjà visible en HTML — intro = léger from, pas un masquage dur.
       introDoneRef.current = false;
+      gsap.set(nodes, { autoAlpha: 1 });
 
       let cancelled = false;
+      const failsafe = window.setTimeout(() => {
+        if (!cancelled && !introDoneRef.current) revealAll();
+      }, 1200);
+
       const tl = gsap.timeline({
         paused: true,
         delay: 0.08,
@@ -531,7 +536,7 @@ export function CinematicHero() {
 
         tl.fromTo(
           brand,
-          { autoAlpha: 0, y: 18, scale: 0.96 },
+          { autoAlpha: 0.55, y: 14, scale: 0.98 },
           {
             autoAlpha: 1,
             y: 0,
@@ -545,7 +550,7 @@ export function CinematicHero() {
         if (beatEl) {
           tl.fromTo(
             beatEl,
-            { autoAlpha: 0, y: -8 },
+            { autoAlpha: 0.55, y: -6 },
             {
               autoAlpha: 1,
               y: 0,
@@ -558,7 +563,7 @@ export function CinematicHero() {
 
         tl.fromTo(
           title,
-          { autoAlpha: 0, y: 18 },
+          { autoAlpha: 0.55, y: 12 },
           {
             autoAlpha: 1,
             y: 0,
@@ -571,7 +576,7 @@ export function CinematicHero() {
         if (lead) {
           tl.fromTo(
             lead,
-            { autoAlpha: 0, y: 12 },
+            { autoAlpha: 0.55, y: 10 },
             {
               autoAlpha: 1,
               y: 0,
@@ -585,7 +590,7 @@ export function CinematicHero() {
         if (cta) {
           tl.fromTo(
             cta,
-            { autoAlpha: 0, y: 14 },
+            { autoAlpha: 0.55, y: 10 },
             {
               autoAlpha: 1,
               y: 0,
@@ -599,7 +604,7 @@ export function CinematicHero() {
         if (hint) {
           tl.fromTo(
             hint,
-            { autoAlpha: 0 },
+            { autoAlpha: 0.4 },
             { autoAlpha: 1, duration: DURATION.base, ease: EASE.soft },
             "-=0.05"
           );
@@ -619,6 +624,7 @@ export function CinematicHero() {
 
       return () => {
         cancelled = true;
+        window.clearTimeout(failsafe);
         tl.kill();
       };
     },
@@ -633,7 +639,7 @@ export function CinematicHero() {
       id="accueil"
       aria-label="Résidence Allure — introduction cinématographique"
     >
-      {/* Canvas toujours là (pin GSAP). Vidéo desktop seulement — pas de MP4/WebM sur mobile. */}
+      {/* Canvas toujours là (pin GSAP). Vidéo desktop — MP4 seul (WebM plus lourd). */}
       {isMobile !== true ? (
         <video
           ref={videoRef}
@@ -650,10 +656,7 @@ export function CinematicHero() {
           aria-hidden
         >
           {isMobile === false ? (
-            <>
-              <source src={HERO_MP4} type="video/mp4" />
-              <source src={HERO_WEBM} type="video/webm" />
-            </>
+            <source src={HERO_MP4} type="video/mp4" />
           ) : null}
         </video>
       ) : null}
@@ -672,23 +675,30 @@ export function CinematicHero() {
         <img
           src={OPENING_STILL}
           alt=""
+          fetchPriority="high"
+          decoding="async"
           className={cn(
             "absolute inset-0 h-full w-full object-cover transition-opacity duration-300",
             showStaticFallback ? "opacity-100" : "opacity-0"
           )}
         />
-        <div className={cn(waiting && reduced !== true ? "contents" : "hidden")}>
-          <MediaLoader tone="petrol" label="Chargement" />
-        </div>
       </div>
 
       <motion.div
         style={{ opacity: bandOpacity }}
-        className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-16 bg-gradient-to-b from-black/30 to-transparent sm:h-20"
+        className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-24 bg-gradient-to-b from-black/55 via-black/20 to-transparent sm:h-28"
       />
-      <motion.div
-        style={{ opacity: bandOpacity }}
-        className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-20 bg-gradient-to-t from-black/35 to-transparent sm:h-24"
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-y-0 left-0 z-[1] hidden w-56 bg-gradient-to-r from-black/60 via-black/25 to-transparent lg:block lg:w-72"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-[46%] bg-gradient-to-t from-black/75 via-black/40 to-transparent"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-y-0 right-0 z-[1] hidden w-32 bg-gradient-to-l from-black/40 to-transparent md:block lg:w-40"
       />
 
       <HeroExitFade compact to={SHARP.white} toDark={SHARP.petrolDeep} />
@@ -707,10 +717,7 @@ export function CinematicHero() {
       >
         <p
           ref={beatRef}
-          className={cn(
-            "font-sans text-[10px] uppercase tracking-[0.5em] text-allure-gold sm:text-xs",
-            textReadyClass
-          )}
+          className="font-sans text-[10px] uppercase tracking-[0.5em] text-allure-gold [text-shadow:0_1px_12px_rgba(0,0,0,0.45)] sm:text-xs"
         >
           {beat.label}
         </p>
@@ -718,11 +725,10 @@ export function CinematicHero() {
         <p
           ref={brandRef}
           className={cn(
-            "font-heading font-medium leading-none tracking-[0.22em] text-white transition-[font-size] duration-500",
+            "font-heading font-medium leading-none tracking-[0.22em] text-white [text-shadow:0_2px_28px_rgba(0,0,0,0.55)] transition-[font-size] duration-500",
             hasHeadline
-              ? "text-[clamp(1.6rem,4.2vw,2.6rem)] opacity-85"
-              : "text-[clamp(2.4rem,7vw,4.6rem)]",
-            textReadyClass
+              ? "text-[clamp(1.6rem,4.2vw,2.6rem)] opacity-90"
+              : "text-[clamp(2.4rem,7vw,4.6rem)]"
           )}
         >
           ALLURE
@@ -730,34 +736,25 @@ export function CinematicHero() {
 
         <h1
           ref={titleRef}
-          className={cn(
-            "max-w-md font-heading text-xl leading-snug text-white/95 sm:text-2xl lg:text-3xl",
-            textReadyClass
-          )}
+          className="max-w-md font-heading text-xl leading-snug text-white [text-shadow:0_2px_24px_rgba(0,0,0,0.5)] sm:text-2xl lg:text-3xl"
         >
           {beat.headline || "Résidence Allure"}
         </h1>
 
         <p
           ref={leadRef}
-          className={cn(
-            "max-w-sm font-sans text-sm leading-relaxed text-white/65",
-            textReadyClass
-          )}
+          className="max-w-sm font-sans text-sm leading-relaxed text-white/85 [text-shadow:0_1px_16px_rgba(0,0,0,0.55)]"
         >
           {beat.lead}
         </p>
 
         <div
           ref={ctaRef}
-          className={cn(
-            "pointer-events-auto mt-2 flex items-center justify-center",
-            textReadyClass
-          )}
+          className="pointer-events-auto mt-2 flex items-center justify-center"
         >
           <a
             href={beat.id === "habiter" ? "/appartements-temoins" : "/rendez-vous"}
-            className="group relative border border-white/40 px-9 py-3.5 font-sans text-xs font-medium uppercase tracking-[0.32em] text-white transition-colors duration-300 hover:border-allure-gold/70"
+            className="group relative border border-white/55 bg-black/25 px-9 py-3.5 font-sans text-xs font-medium uppercase tracking-[0.32em] text-white backdrop-blur-sm transition-colors duration-300 hover:border-allure-gold/80 hover:bg-black/35"
           >
             {beat.id === "habiter" ? "Appartements témoins" : "Planifier une visite"}
             <span
@@ -773,10 +770,7 @@ export function CinematicHero() {
       <motion.div
         ref={hintRef}
         style={{ opacity: hintOpacity }}
-        className={cn(
-          "pointer-events-none absolute inset-x-0 bottom-8 z-10 flex justify-center sm:bottom-10",
-          textReadyClass
-        )}
+        className="pointer-events-none absolute inset-x-0 bottom-8 z-10 flex justify-center sm:bottom-10"
       >
         <span
           className={cn(

@@ -10,8 +10,8 @@ import { SiteLogo } from "@/components/layout/site-logo";
 
 registerGsap();
 
-const MIN_VISIBLE_MS = 900;
-const MAX_WAIT_MS = 2200;
+const MIN_VISIBLE_MS = 500;
+const MAX_WAIT_MS = 1200;
 const STORAGE_KEY = "allure-loader-shown";
 
 /**
@@ -50,22 +50,24 @@ export function SiteLoader() {
       }, wait);
     };
 
-    // Attendre que reduced soit connu (évite un hide trop tôt).
-    // Ne pas bloquer sur window.load : preload vidéo peut empêcher "complete".
+    // Ne pas attendre window.load (vidéos hero) — DOM prêt suffit.
     const ready = () => {
       if (reducedRef.current === null) {
         window.requestAnimationFrame(ready);
         return;
       }
-      if (document.readyState === "complete") finish();
-      else window.addEventListener("load", finish, { once: true });
+      if (document.readyState === "interactive" || document.readyState === "complete") {
+        finish();
+      } else {
+        document.addEventListener("DOMContentLoaded", finish, { once: true });
+      }
     };
     ready();
     const maxWait = window.setTimeout(finish, MAX_WAIT_MS);
 
     return () => {
       window.clearTimeout(maxWait);
-      window.removeEventListener("load", finish);
+      document.removeEventListener("DOMContentLoaded", finish);
     };
   }, []);
 

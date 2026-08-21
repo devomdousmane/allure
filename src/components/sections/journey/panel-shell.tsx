@@ -176,19 +176,23 @@ export function PanelShell({ panel, children }: PanelShellProps) {
 
       <div
         data-journey-copy
-        className="absolute inset-x-0 top-[22%] z-10 px-6 text-center sm:top-[26%]"
+        className="absolute inset-x-0 top-[20%] z-10 px-6 text-center sm:top-[24%]"
       >
         <div
           aria-hidden
-          className="pointer-events-none absolute left-1/2 top-1/2 h-44 w-[min(100%,38rem)] -translate-x-1/2 -translate-y-1/2 rounded-full bg-allure-sand/80 blur-3xl dark:hidden"
+          className="pointer-events-none absolute left-1/2 top-1/2 h-52 w-[min(100%,42rem)] -translate-x-1/2 -translate-y-1/2 rounded-full bg-allure-sand/90 blur-3xl dark:hidden"
         />
-        <p className="relative font-sans text-[10px] uppercase tracking-[0.4em] text-allure-gold sm:text-xs">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute left-1/2 top-1/2 hidden h-52 w-[min(100%,42rem)] -translate-x-1/2 -translate-y-1/2 rounded-full bg-allure-petrol-deep/75 blur-3xl dark:block"
+        />
+        <p className="relative font-sans text-xs font-medium uppercase tracking-[0.32em] text-allure-gold sm:text-sm">
           {panel.phase}
         </p>
-        <h2 className="relative mt-3 font-heading text-3xl text-allure-petrol sm:text-4xl lg:text-5xl dark:text-allure-sand">
+        <h2 className="relative mt-3 font-heading text-4xl text-allure-petrol sm:text-5xl lg:text-6xl dark:text-allure-sand">
           {panel.headline}
         </h2>
-        <p className="relative mx-auto mt-3 max-w-md font-sans text-sm text-allure-ink/65 dark:text-allure-sand/65">
+        <p className="relative mx-auto mt-4 max-w-lg font-sans text-base leading-relaxed text-allure-ink/85 sm:text-lg dark:text-allure-sand/90">
           {panel.sub}
         </p>
       </div>

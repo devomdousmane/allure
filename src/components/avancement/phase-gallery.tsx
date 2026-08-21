@@ -28,6 +28,11 @@ type PhaseGalleryProps = {
   className?: string;
   /** Priorité sur la première vignette (phase 1) */
   priorityFirst?: boolean;
+  /**
+   * `contain` : photo entière dans la box (événements / portraits),
+   * sans crop des têtes — pas besoin d’ouvrir la lightbox.
+   */
+  fit?: "cover" | "contain";
 };
 
 /** Placement bento (grille 6 colonnes desktop) */
@@ -61,11 +66,13 @@ export function PhaseGallery({
   images,
   className,
   priorityFirst = false,
+  fit = "cover",
 }: PhaseGalleryProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const [index, setIndex] = useState(0);
   const reduced = usePrefersReducedMotion();
+  const showFull = fit === "contain";
 
   useGSAP(
     () => {
@@ -110,7 +117,11 @@ export function PhaseGallery({
         y: isNarrow ? 24 : 40,
         clipPath: isNarrow ? "inset(6% 4% 6% 4%)" : "inset(14% 10% 14% 10%)",
       });
-      gsap.set(imgs, { scale: 1.16, transformOrigin: "50% 50%" });
+      // Contain : pas de zoom/crop qui coupe les têtes
+      gsap.set(imgs, {
+        scale: showFull ? 1 : 1.16,
+        transformOrigin: "50% 50%",
+      });
 
       // Entrée orchestrée : batch ScrollTrigger (skill gsap-scrolltrigger)
       ScrollTrigger.batch(tiles, {
@@ -129,7 +140,7 @@ export function PhaseGallery({
           });
           batch.forEach((tile) => {
             const img = tile.querySelector<HTMLElement>("[data-gallery-img]");
-            if (!img) return;
+            if (!img || showFull) return;
             gsap.to(img, {
               scale: 1,
               duration: DURATION.slow,
@@ -150,35 +161,39 @@ export function PhaseGallery({
           });
           batch.forEach((tile) => {
             const img = tile.querySelector<HTMLElement>("[data-gallery-img]");
-            if (img) gsap.to(img, { scale: 1.1, duration: 0.35, overwrite: "auto" });
+            if (img && !showFull) {
+              gsap.to(img, { scale: 1.1, duration: 0.35, overwrite: "auto" });
+            }
           });
         },
       });
 
-      // Parallax scrub dans chaque tuile (intensité réduite mobile)
-      const parallaxAmp = isNarrow ? 6 : 12;
-      imgs.forEach((img) => {
-        const tile = img.closest<HTMLElement>("[data-gallery-tile]");
-        if (!tile) return;
-        gsap.fromTo(
-          img,
-          { yPercent: -parallaxAmp },
-          {
-            yPercent: parallaxAmp,
-            ease: "none",
-            scrollTrigger: {
-              trigger: tile,
-              start: "top bottom",
-              end: "bottom top",
-              scrub: isNarrow ? 0.9 : 0.55,
-            },
-          }
-        );
-      });
+      // Parallax scrub — désactivé en contain (évite de couper les têtes)
+      if (!showFull) {
+        const parallaxAmp = isNarrow ? 6 : 12;
+        imgs.forEach((img) => {
+          const tile = img.closest<HTMLElement>("[data-gallery-tile]");
+          if (!tile) return;
+          gsap.fromTo(
+            img,
+            { yPercent: -parallaxAmp },
+            {
+              yPercent: parallaxAmp,
+              ease: "none",
+              scrollTrigger: {
+                trigger: tile,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: isNarrow ? 0.9 : 0.55,
+              },
+            }
+          );
+        });
+      }
     },
     {
       scope: rootRef,
-      dependencies: [reduced, images],
+      dependencies: [reduced, images, showFull],
       revertOnUpdate: true,
     }
   );
@@ -226,7 +241,10 @@ export function PhaseGallery({
                   <span className="absolute inset-0 overflow-hidden">
                     <span
                       data-gallery-img
-                      className="absolute inset-[-12%] will-change-transform"
+                      className={cn(
+                        "absolute will-change-transform",
+                        showFull ? "inset-0" : "inset-[-12%]"
+                      )}
                     >
                       <Image
                         src={image.src}
@@ -238,14 +256,22 @@ export function PhaseGallery({
                             : "(min-width: 640px) 20vw, 45vw"
                         }
                         priority={priorityFirst && i === 0}
-                        className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                        className={cn(
+                          "transition-transform duration-700 ease-out motion-reduce:transition-none",
+                          showFull
+                            ? "object-contain object-center bg-allure-petrol/[0.04] dark:bg-allure-sand/[0.04]"
+                            : "object-cover object-top group-hover:scale-[1.03] motion-reduce:group-hover:scale-100"
+                        )}
                       />
                     </span>
                   </span>
 
                   <span
                     aria-hidden
-                    className="pointer-events-none absolute inset-0 bg-gradient-to-t from-allure-petrol-deep/70 via-allure-petrol-deep/10 to-transparent opacity-80 transition-opacity duration-300 group-hover:opacity-95"
+                    className={cn(
+                      "pointer-events-none absolute inset-0 bg-gradient-to-t from-allure-petrol-deep/70 via-allure-petrol-deep/10 to-transparent transition-opacity duration-300 group-hover:opacity-95",
+                      showFull ? "opacity-40" : "opacity-80"
+                    )}
                   />
                   <span
                     aria-hidden

@@ -14,7 +14,7 @@ type ContactBody = {
 };
 
 export async function POST(request: Request) {
-  const limited = rateLimit(`contact:${clientIp(request)}`, {
+  const limited = await rateLimit(`contact:${clientIp(request)}`, {
     limit: 5,
     windowMs: 15 * 60 * 1000,
   });

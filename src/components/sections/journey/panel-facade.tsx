@@ -21,8 +21,8 @@ type Props = { panel: JourneyPanelConfig };
 export function PanelFacade({ panel }: Props) {
   return (
     <PanelShell panel={panel}>
-      <div className="absolute bottom-28 left-6 z-20 sm:bottom-[20%] sm:left-10 lg:left-14">
-        <p className="font-sans text-[9px] uppercase tracking-[0.28em] text-allure-gold/80">
+      <div className="absolute bottom-28 left-6 z-20 rounded-2xl bg-allure-sand/75 px-4 py-3 backdrop-blur-sm sm:bottom-[18%] sm:left-10 sm:px-5 sm:py-4 lg:left-14 dark:bg-allure-petrol-deep/70">
+        <p className="font-sans text-xs font-medium uppercase tracking-[0.24em] text-allure-gold">
           Matériaux
         </p>
         <ul className="mt-3 flex flex-col gap-2.5">
@@ -31,16 +31,16 @@ export function PanelFacade({ panel }: Props) {
               <span
                 className={
                   i === 0
-                    ? "h-3 w-3 rounded-sm ring-1 ring-allure-gold/50"
-                    : "h-3 w-3 rounded-sm ring-1 ring-allure-petrol/15 dark:ring-allure-sand/15"
+                    ? "h-3.5 w-3.5 rounded-sm ring-1 ring-allure-gold/50"
+                    : "h-3.5 w-3.5 rounded-sm ring-1 ring-allure-petrol/25 dark:ring-allure-sand/25"
                 }
                 style={{ backgroundColor: m.swatch }}
               />
               <span
                 className={
                   i === 0
-                    ? "font-sans text-[11px] uppercase tracking-[0.18em] text-allure-petrol sm:text-xs dark:text-allure-sand"
-                    : "font-sans text-[11px] uppercase tracking-[0.18em] text-allure-petrol/40 sm:text-xs dark:text-allure-sand/35"
+                    ? "font-sans text-sm font-medium uppercase tracking-[0.14em] text-allure-petrol dark:text-allure-sand"
+                    : "font-sans text-sm uppercase tracking-[0.14em] text-allure-petrol/70 dark:text-allure-sand/70"
                 }
               >
                 {m.label}
@@ -50,14 +50,14 @@ export function PanelFacade({ panel }: Props) {
         </ul>
       </div>
 
-      <ul className="absolute top-[48%] right-6 z-20 hidden flex-col gap-3 sm:top-[26%] sm:right-10 sm:flex lg:right-14">
-        <li className="font-sans text-[9px] uppercase tracking-[0.28em] text-allure-gold/80">
+      <ul className="absolute top-[48%] right-6 z-20 hidden flex-col gap-3 rounded-2xl bg-allure-sand/75 px-4 py-4 backdrop-blur-sm sm:top-[24%] sm:right-10 sm:flex lg:right-14 dark:bg-allure-petrol-deep/70">
+        <li className="font-sans text-xs font-medium uppercase tracking-[0.24em] text-allure-gold">
           Prestations
         </li>
         {AMENITIES.map(({ label, Icon }) => (
           <li key={label} className="flex items-center gap-3">
-            <Icon className="h-3.5 w-3.5 shrink-0 text-allure-gold/70" aria-hidden />
-            <span className="font-sans text-[11px] text-allure-petrol/70 sm:text-xs dark:text-allure-sand/70">
+            <Icon className="h-4 w-4 shrink-0 text-allure-gold" aria-hidden />
+            <span className="font-sans text-sm text-allure-petrol/85 dark:text-allure-sand/90">
               {label}
             </span>
           </li>

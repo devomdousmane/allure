@@ -23,6 +23,8 @@ type NavFlyoutMenuProps = {
   triggerClassName?: string;
   active?: boolean;
   flyoutSide?: "bottom" | "right";
+  /** Accordion inline — nav latérale hero (évite les flyouts qui se chevauchent). */
+  variant?: "flyout" | "rail";
 };
 
 /**
@@ -38,6 +40,7 @@ export function NavFlyoutMenu({
   triggerClassName,
   active = false,
   flyoutSide = "bottom",
+  variant = "flyout",
 }: NavFlyoutMenuProps) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -46,6 +49,7 @@ export function NavFlyoutMenu({
   const [open, setOpen] = useState(false);
   const reduced = usePrefersReducedMotion();
   const menuId = useId();
+  const isRail = variant === "rail";
 
   const clearClose = () => {
     if (closeTimer.current) {
@@ -56,7 +60,7 @@ export function NavFlyoutMenu({
 
   const scheduleClose = () => {
     clearClose();
-    closeTimer.current = setTimeout(() => setOpen(false), 220);
+    closeTimer.current = setTimeout(() => setOpen(false), isRail ? 280 : 220);
   };
 
   const openMenu = () => {
@@ -83,6 +87,45 @@ export function NavFlyoutMenu({
 
       const flyItems = list.querySelectorAll<HTMLElement>("[data-apt-item]");
       const rule = panel.querySelector<HTMLElement>("[data-apt-rule]");
+
+      if (isRail) {
+        if (reduced === true) {
+          gsap.set(panel, {
+            height: open ? "auto" : 0,
+            autoAlpha: open ? 1 : 0,
+          });
+          return;
+        }
+        if (!open) {
+          gsap.to(panel, {
+            height: 0,
+            autoAlpha: 0,
+            duration: 0.28,
+            ease: EASE.soft,
+          });
+          return;
+        }
+        gsap.set(panel, { height: "auto", autoAlpha: 1, overflow: "hidden" });
+        const h = panel.scrollHeight;
+        gsap.fromTo(
+          panel,
+          { height: 0, autoAlpha: 0 },
+          { height: h, autoAlpha: 1, duration: 0.34, ease: EASE.out }
+        );
+        gsap.fromTo(
+          flyItems,
+          { autoAlpha: 0, x: -6 },
+          {
+            autoAlpha: 1,
+            x: 0,
+            duration: 0.28,
+            stagger: 0.035,
+            delay: 0.04,
+            ease: EASE.out,
+          }
+        );
+        return;
+      }
 
       if (reduced === true) {
         gsap.set(panel, {
@@ -129,8 +172,107 @@ export function NavFlyoutMenu({
         0.08
       );
     },
-    { dependencies: [open, reduced] }
+    { dependencies: [open, reduced, isRail] }
   );
+
+  if (isRail) {
+    return (
+      <div
+        ref={wrapRef}
+        className={cn("flex w-full flex-col", className)}
+        onPointerEnter={openMenu}
+        onPointerLeave={scheduleClose}
+        onFocusCapture={openMenu}
+        onBlurCapture={(e) => {
+          if (!wrapRef.current?.contains(e.relatedTarget as Node)) {
+            scheduleClose();
+          }
+        }}
+      >
+        <div className="flex items-center gap-1">
+          <Link
+            href={href}
+            data-header-link=""
+            aria-current={active ? "page" : undefined}
+            aria-expanded={open}
+            aria-controls={menuId}
+            className={cn(
+              "group relative inline-flex min-w-0 flex-1 items-center gap-1.5 py-0.5 font-sans font-medium uppercase tracking-[0.14em] transition-colors duration-200",
+              triggerClassName
+            )}
+            onClick={() => setOpen(false)}
+          >
+            <span data-nav-label className="relative z-[1] truncate">
+              {label}
+            </span>
+            <span
+              aria-hidden
+              data-nav-line
+              className={cn(
+                "pointer-events-none absolute -bottom-0.5 left-0 h-px w-10 origin-left bg-allure-gold/90 transition-transform duration-300",
+                active || open ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
+              )}
+            />
+          </Link>
+          <button
+            type="button"
+            aria-expanded={open}
+            aria-controls={menuId}
+            aria-label={menuAriaLabel}
+            onClick={() => setOpen((v) => !v)}
+            className="inline-flex size-7 shrink-0 cursor-pointer items-center justify-center text-white/55 transition-colors hover:text-allure-gold"
+          >
+            <ChevronDown
+              aria-hidden
+              className={cn(
+                "size-3.5 transition-transform duration-300",
+                open && "rotate-180 text-allure-gold"
+              )}
+            />
+          </button>
+        </div>
+
+        <div
+          ref={panelRef}
+          id={menuId}
+          role="menu"
+          aria-label={menuAriaLabel}
+          className="overflow-hidden"
+          style={{ height: 0, opacity: 0 }}
+        >
+          <ul ref={listRef} className="mt-2 mb-1 flex flex-col border-l border-white/20 pl-3">
+            {items.map((item) => (
+              <li key={item.href}>
+                <Link
+                  href={item.href}
+                  role="menuitem"
+                  data-apt-item
+                  onClick={() => setOpen(false)}
+                  className="group/item flex items-baseline justify-between gap-3 py-1.5 font-sans text-[11px] uppercase tracking-[0.12em] text-white/55 transition-colors duration-200 hover:text-allure-gold"
+                >
+                  <span className="truncate">{item.label}</span>
+                  <span className="shrink-0 text-[9px] tabular-nums tracking-[0.08em] text-white/30 group-hover/item:text-white/50">
+                    {item.meta}
+                  </span>
+                </Link>
+              </li>
+            ))}
+            <li>
+              <Link
+                href={href}
+                role="menuitem"
+                data-apt-item
+                onClick={() => setOpen(false)}
+                className="mt-0.5 block py-1.5 font-sans text-[10px] uppercase tracking-[0.18em] text-allure-gold/90 transition-colors hover:text-allure-gold"
+              >
+                {overviewLabel}
+              </Link>
+            </li>
+          </ul>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div

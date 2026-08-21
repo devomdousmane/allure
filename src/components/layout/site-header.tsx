@@ -478,7 +478,7 @@ export function SiteHeader() {
   const prevOverlay = useRef(overlayNav);
 
   const linkTone = overlayNav
-    ? "text-[11px] tracking-[0.18em] text-white/75 transition-colors duration-200 hover:text-white xl:text-xs"
+    ? "text-[11px] tracking-[0.16em] text-white/80 transition-colors duration-200 hover:text-allure-gold xl:text-xs"
     : "text-[12px] tracking-[0.14em] text-allure-ink/75 transition-colors duration-200 hover:text-allure-petrol xl:text-[13px] dark:text-allure-sand/75 dark:hover:text-allure-gold";
 
   useGSAP(
@@ -550,7 +550,7 @@ export function SiteHeader() {
         className={cn(
           "fixed z-50 transition-[background-color,box-shadow,backdrop-filter] duration-500",
           overlayNav
-            ? "pointer-events-none inset-x-0 top-0 bg-transparent lg:inset-x-auto lg:inset-y-0 lg:left-0 lg:w-44"
+            ? "pointer-events-none inset-x-0 top-0 bg-transparent lg:inset-x-auto lg:inset-y-0 lg:left-0 lg:w-[13.5rem] xl:w-60"
             : scrolled || menuOpen
               ? "inset-x-0 top-0 w-full bg-allure-sand/92 shadow-[0_1px_0_0_rgba(30,75,93,0.08)] backdrop-blur-md dark:bg-allure-petrol-deep/92 dark:shadow-[0_1px_0_0_rgba(224,191,137,0.08)]"
               : "inset-x-0 top-0 w-full bg-transparent"
@@ -561,16 +561,22 @@ export function SiteHeader() {
           className={cn(
             "flex w-full px-5 sm:px-6 lg:px-10 xl:px-14",
             overlayNav
-              ? "pointer-events-none items-center justify-between py-3 lg:h-full lg:flex-col lg:items-start lg:justify-between lg:border-r lg:border-white/10 lg:px-5 lg:py-8 lg:pb-12"
+              ? "pointer-events-none relative items-center justify-between py-3 lg:h-full lg:flex-col lg:items-stretch lg:justify-between lg:px-5 lg:py-9 lg:pb-12"
               : "items-center gap-4 py-3.5 lg:gap-8"
           )}
         >
+          {overlayNav ? (
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0 -z-10 hidden bg-gradient-to-r from-black/55 via-black/30 to-transparent lg:block"
+            />
+          ) : null}
           <div
             data-header-logo
             className="pointer-events-auto shrink-0 will-change-transform"
           >
             <SiteLogo
-              height={overlayNav ? 44 : 64}
+              height={overlayNav ? 48 : 64}
               priority
               inverted={overlayNav || (!scrolled && !menuOpen)}
             />
@@ -582,7 +588,7 @@ export function SiteHeader() {
             className={cn(
               "min-w-0",
               overlayNav
-                ? "pointer-events-auto hidden flex-col items-start gap-4 lg:flex"
+                ? "pointer-events-auto hidden w-full flex-col items-stretch gap-3 lg:flex"
                 : "hidden flex-1 items-center justify-center gap-6 lg:flex xl:gap-8 2xl:gap-10"
             )}
           >
@@ -602,6 +608,7 @@ export function SiteHeader() {
                     overviewLabel={link.overviewLabel}
                     menuAriaLabel={link.menuAriaLabel}
                     active={active}
+                    variant={overlayNav ? "rail" : "flyout"}
                     flyoutSide={overlayNav ? "right" : "bottom"}
                     triggerClassName={cn(
                       linkTone,
@@ -621,7 +628,7 @@ export function SiteHeader() {
                   label={link.label}
                   active={active}
                   data-header-link
-                  className={linkTone}
+                  className={cn(linkTone, overlayNav && "py-0.5")}
                 />
               );
             })}

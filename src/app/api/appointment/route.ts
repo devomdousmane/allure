@@ -31,7 +31,7 @@ const visitTypeOk = (value: string) =>
 const timeOk = (value: string) => TIME_SLOTS.some((t) => t.value === value);
 
 export async function POST(request: Request) {
-  const limited = rateLimit(`appointment:${clientIp(request)}`, {
+  const limited = await rateLimit(`appointment:${clientIp(request)}`, {
     limit: 5,
     windowMs: 15 * 60 * 1000,
   });

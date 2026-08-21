@@ -95,7 +95,7 @@ export const HOME_CHAPTERS: HomeChapter[] = [
     pinTitle: "Habiter Allure",
     rail: false,
     cta: {
-      label: "Voir les témoins",
+      label: "Voir nos appartements témoins",
       href: "/appartements-temoins",
     },
   },
@@ -106,7 +106,7 @@ export const HOME_CHAPTERS: HomeChapter[] = [
     pinTitle: "Show flats",
     rail: true,
     cta: {
-      label: "Voir les témoins",
+      label: "Voir nos appartements témoins",
       href: "/appartements-temoins",
     },
   },

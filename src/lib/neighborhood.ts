@@ -9,7 +9,7 @@ import {
   Waves,
 } from "lucide-react";
 
-/** Résidence Allure — Route des Almadies (géocodage Nominatim). */
+/** Résidence Allure — Rue NG-132 / Route des Almadies (géocodage site). */
 export const ALLURE_RESIDENCE: [number, number] = [-17.519, 14.744];
 
 export type NeighborhoodCategory =
@@ -48,17 +48,18 @@ export const NEIGHBORHOOD_CATEGORIES: {
 ];
 
 /**
- * Points d’intérêt Almadies / Ngor — distances approximatives à pied ou en voiture.
- * Coordonnées orientatives pour la démo carte (affinage GPS possible plus tard).
+ * Points d’intérêt autour de Résidence Allure (Almadies / Ngor).
+ * Coordonnées OSM (Overpass, rayon ~1–2 km) — distances approximatives à pied.
  */
 export const NEIGHBORHOOD_POIS: NeighborhoodPoi[] = [
+  // —— Plages ——
   {
     id: "plage-almadies",
     category: "beach",
     label: "Plage des Almadies",
-    detail: "Sable fin, restaurants de bord de mer",
-    distance: "300 m",
-    coords: [-17.5287, 14.7449],
+    detail: "Corniche — restos pieds dans le sable",
+    distance: "5 min",
+    coords: [-17.5214, 14.7409],
     zoom: 15.2,
   },
   {
@@ -66,64 +67,180 @@ export const NEIGHBORHOOD_POIS: NeighborhoodPoi[] = [
     category: "beach",
     label: "Plage de Ngor",
     detail: "Spot surf & village de pêcheurs",
-    distance: "8 min",
+    distance: "10 min",
     coords: [-17.5128, 14.7502],
     zoom: 14.8,
   },
   {
-    id: "ecole-int",
-    category: "school",
-    label: "Écoles internationales",
-    detail: "Campus & établissements bilingues",
-    distance: "5 min",
-    coords: [-17.5155, 14.7395],
-    zoom: 14.6,
-  },
-  {
-    id: "universite",
-    category: "school",
-    label: "Pôle universitaire",
-    detail: "Écoles & formations à proximité",
+    id: "pointe-almadies",
+    category: "beach",
+    label: "Pointe des Almadies",
+    detail: "Point le plus à l’ouest du continent",
     distance: "12 min",
-    coords: [-17.468, 14.692],
-    zoom: 13.2,
+    coords: [-17.5282, 14.7454],
+    zoom: 15,
   },
+
+  // —— Écoles ——
   {
-    id: "clinique",
-    category: "health",
-    label: "Cliniques & centres de santé",
-    detail: "Soins de proximité Almadies / Ngor",
-    distance: "7 min",
-    coords: [-17.5085, 14.7418],
-    zoom: 14.4,
-  },
-  {
-    id: "pharmacie",
-    category: "health",
-    label: "Pharmacies de garde",
-    detail: "Services de santé du quotidien",
-    distance: "4 min",
-    coords: [-17.5172, 14.7428],
+    id: "ipp-almadies",
+    category: "school",
+    label: "Institut Polytechnique Panafricain",
+    detail: "Campus Almadies — ~450 m",
+    distance: "6 min",
+    coords: [-17.5149, 14.74424],
     zoom: 15,
   },
   {
-    id: "restos-virage",
+    id: "lucie-leclerc",
+    category: "school",
+    label: "École Lucie Leclerc",
+    detail: "Établissement de proximité",
+    distance: "10 min",
+    coords: [-17.51158, 14.74239],
+    zoom: 14.8,
+  },
+  {
+    id: "ort-ngor",
+    category: "school",
+    label: "ORT Sen Ngor",
+    detail: "Formation & campus Ngor",
+    distance: "8 min",
+    coords: [-17.51335, 14.74676],
+    zoom: 14.8,
+  },
+
+  // —— Santé ——
+  {
+    id: "pharmacie-almadies-ngor",
+    category: "health",
+    label: "Pharmacie Almadies Ngor",
+    detail: "Pharmacie de proximité",
+    distance: "9 min",
+    coords: [-17.51284, 14.7464],
+    zoom: 15,
+  },
+  {
+    id: "pharmacie-seydina",
+    category: "health",
+    label: "Pharmacie Seydina Mouhamed",
+    detail: "Route de la Mosquée de Ngor",
+    distance: "9 min",
+    coords: [-17.5147, 14.74916],
+    zoom: 15,
+  },
+  {
+    id: "clinique-knox",
+    category: "health",
+    label: "Cabinet Dr Knox",
+    detail: "Soins de proximité Almadies",
+    distance: "12 min",
+    coords: [-17.51144, 14.73899],
+    zoom: 14.8,
+  },
+
+  // —— Restaurants (adresses réelles OSM) ——
+  {
+    id: "maison-celine",
     category: "restaurant",
-    label: "Restaurants & terrasses",
-    detail: "Adresse gastronomique des Almadies",
+    label: "La Maison de Céline",
+    detail: "Restaurant — à 200 m de la résidence",
     distance: "3 min",
-    coords: [-17.5225, 14.7462],
+    coords: [-17.51805, 14.74566],
+    zoom: 15.4,
+  },
+  {
+    id: "kotao",
+    category: "restaurant",
+    label: "Kotao",
+    detail: "Cuisine internationale — Route de King Fahd",
+    distance: "3 min",
+    coords: [-17.52096, 14.74334],
+    zoom: 15.4,
+  },
+  {
+    id: "poesia",
+    category: "restaurant",
+    label: "Poesia",
+    detail: "Adresse Almadies — terrasse",
+    distance: "5 min",
+    coords: [-17.52052, 14.74111],
+    zoom: 15.2,
+  },
+  {
+    id: "chez-fatou",
+    category: "restaurant",
+    label: "Chez Fatou",
+    detail: "Fruits de mer — Corniche des Almadies",
+    distance: "6 min",
+    coords: [-17.52137, 14.74093],
+    zoom: 15.2,
+  },
+  {
+    id: "3-flamingos",
+    category: "restaurant",
+    label: "3 Flamingos",
+    detail: "Terrasse face à la mer",
+    distance: "6 min",
+    coords: [-17.51996, 14.74041],
+    zoom: 15.2,
+  },
+  {
+    id: "prainha",
+    category: "restaurant",
+    label: "Crêperie Prainha",
+    detail: "Crêpes — Corniche des Almadies",
+    distance: "5 min",
+    coords: [-17.51825, 14.74055],
+    zoom: 15.2,
+  },
+  {
+    id: "sharkys",
+    category: "restaurant",
+    label: "Sharkys",
+    detail: "Sushi & bord de mer",
+    distance: "6 min",
+    coords: [-17.52034, 14.74055],
+    zoom: 15.2,
+  },
+  {
+    id: "bahia",
+    category: "restaurant",
+    label: "Bahia Beach Club",
+    detail: "Beach club — Corniche",
+    distance: "6 min",
+    coords: [-17.52175, 14.74105],
+    zoom: 15.2,
+  },
+  {
+    id: "cabanon",
+    category: "restaurant",
+    label: "Le Cabanon",
+    detail: "Adresse prisée des Almadies",
+    distance: "8 min",
+    coords: [-17.51698, 14.73906],
     zoom: 15,
   },
   {
-    id: "cafe-lounge",
+    id: "ngor-pieds-eau",
     category: "restaurant",
-    label: "Cafés & lounges",
-    detail: "Ambiances jour / soir",
-    distance: "5 min",
-    coords: [-17.5208, 14.7415],
+    label: "Le Ngor, Pieds dans l’eau",
+    detail: "Fruits de mer — vue océan",
+    distance: "9 min",
+    coords: [-17.52481, 14.74116],
     zoom: 15,
   },
+  {
+    id: "la-pointe",
+    category: "restaurant",
+    label: "La Pointe des Almadies",
+    detail: "Restaurant multi-cuisines — Pointe",
+    distance: "12 min",
+    coords: [-17.52799, 14.74535],
+    zoom: 15,
+  },
+
+  // —— Transport ——
   {
     id: "taxi-yango",
     category: "transport",
@@ -134,6 +251,15 @@ export const NEIGHBORHOOD_POIS: NeighborhoodPoi[] = [
     zoom: 15.2,
   },
   {
+    id: "corniche-ouest",
+    category: "transport",
+    label: "Corniche Ouest",
+    detail: "Axe principal — Est de la résidence",
+    distance: "4 min",
+    coords: [-17.5145, 14.744],
+    zoom: 14.6,
+  },
+  {
     id: "airport",
     category: "transport",
     label: "Aéroport AIBD",
@@ -142,22 +268,42 @@ export const NEIGHBORHOOD_POIS: NeighborhoodPoi[] = [
     coords: [-17.0735, 14.665],
     zoom: 11.2,
   },
+
+  // —— Commerces ——
   {
-    id: "supermarche",
+    id: "american-food",
     category: "shopping",
-    label: "Supermarchés & commerces",
-    detail: "Courses et services du quotidien",
-    distance: "4 min",
-    coords: [-17.5135, 14.7425],
+    label: "American Food Store",
+    detail: "Épicerie — Route de King Fahd",
+    distance: "3 min",
+    coords: [-17.52111, 14.74345],
+    zoom: 15.2,
+  },
+  {
+    id: "casino",
+    category: "shopping",
+    label: "Casino",
+    detail: "Supermarché Almadies",
+    distance: "11 min",
+    coords: [-17.51141, 14.74114],
     zoom: 14.8,
   },
   {
-    id: "banques",
+    id: "credit-mutuel",
     category: "shopping",
-    label: "Banques & services",
-    detail: "Agences et distributeurs",
-    distance: "6 min",
-    coords: [-17.5168, 14.7402],
+    label: "Crédit Mutuel",
+    detail: "Banque — Route de Ngor",
+    distance: "9 min",
+    coords: [-17.51381, 14.7477],
+    zoom: 15,
+  },
+  {
+    id: "fbnbank",
+    category: "shopping",
+    label: "FBNBank",
+    detail: "Agence & distributeur — Route de Ngor",
+    distance: "11 min",
+    coords: [-17.51114, 14.74238],
     zoom: 14.8,
   },
 ];
@@ -199,4 +345,3 @@ export const POI_PIN_PATHS: Record<
   plane:
     '<path d="M7 1v12M1.5 5 12.5 8.5M1.5 8.5 12.5 5M4.5 11l2.5 2 2.5-2"/>',
 };
-

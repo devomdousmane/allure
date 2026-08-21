@@ -10,7 +10,7 @@ type NewsletterBody = {
 };
 
 export async function POST(request: Request) {
-  const limited = rateLimit(`newsletter:${clientIp(request)}`, {
+  const limited = await rateLimit(`newsletter:${clientIp(request)}`, {
     limit: 8,
     windowMs: 15 * 60 * 1000,
   });
