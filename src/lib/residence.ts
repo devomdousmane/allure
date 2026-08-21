@@ -3,9 +3,10 @@
  * Médias : public/appart-1, appart-2 (visite pièce à pièce) + témoins (hero marketing)
  * + video/compressed
  *
- * Vidéos compressed (analyse) :
- * - video-1.mp4 / video-2.mp4 → ~1080p paysage (~50 Mo) — lifestyle intérieur
- * - contruction.mp4 / Allure-construction-15s → hauteur 1920 (chantier) — page Avancement
+ * Vidéos compressed (web) :
+ * - video-1 / video-2 → portrait 1280p (lifestyle) — résidence
+ * - contruction.mp4 → 1280p paysage — page Avancement
+ * - Allure-construction-15s → 1280p — bandeau home
  */
 
 import { TEMOIN_MEDIA } from "@/lib/media";

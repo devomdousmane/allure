@@ -109,7 +109,7 @@ const EVENT_FILES = [
 
 export const AVANCEMENT_HERO_IMAGE = `${P}/phase-6/HD_172-scaled.jpg`;
 export const AVANCEMENT_OG_IMAGE = `${P}/phase-6/HD_86-scaled.jpg`;
-/** Vidéo chantier — version compressée du fichier public/video/contruction.mp4 */
+/** Vidéo chantier — version compressée (1280p, sans audio). */
 export const AVANCEMENT_HERO_VIDEO = "/video/compressed/contruction.mp4";
 
 /** Scroll-expand hero — image qui s’agrandit + vidéo en fond */
