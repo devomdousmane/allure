@@ -60,8 +60,8 @@ function NavLink({
         aria-hidden
         data-nav-line
         className={cn(
-          "pointer-events-none absolute -bottom-1 left-0 h-px w-full origin-left bg-current",
-          active ? "scale-x-100" : "scale-x-0"
+          "pointer-events-none absolute -bottom-1 left-0 h-px w-full origin-left bg-current transition-transform duration-300 ease-out",
+          active ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100 group-focus-visible:scale-x-100"
         )}
       />
     </Link>

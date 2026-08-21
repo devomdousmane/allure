@@ -14,6 +14,7 @@
     "journal:rasterize": "node scripts/rasterize-flipbook.mjs journal",
     "temoins:optimize": "node scripts/optimize-temoins.mjs",
     "hero:frames": "node scripts/extract-hero-frames.mjs",
+    "hero:frames:optimize": "node scripts/optimize-hero-frames.mjs --half",
     "hero:webm": "node scripts/build-hero-webm.mjs",
     "favicons:generate": "node scripts/generate-favicons.mjs"
   },

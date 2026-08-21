@@ -18,9 +18,10 @@ const root = path.join(__dirname, "..");
 const videoDir = path.join(root, "public", "video", "frame-videos");
 const outDir = path.join(root, "public", "media", "hero-cinematic");
 
-const TOTAL_FRAMES = 120;
-const MAX_WIDTH = 1920;
-const WEBP_QUALITY = 82;
+/** Mobile scrub — moins de frames / moins de pixels = moins de RAM & data. */
+const TOTAL_FRAMES = 60;
+const MAX_WIDTH = 960;
+const WEBP_QUALITY = 68;
 const VIDEOS = ["video-1.mp4", "video-2.mp4", "video-3.mp4"];
 
 function run(cmd, args, { capture = false } = {}) {

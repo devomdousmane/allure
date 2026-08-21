@@ -22,7 +22,7 @@ const OPENING_STILL = "/media/hero-cinematic/opening.webp";
 const HERO_MP4 = "/media/hero-cinematic/hero.mp4";
 const HERO_WEBM = "/media/hero-cinematic/hero.webm";
 /** Séquence WebP — iOS / mobile : seek vidéo `currentTime` trop irrégulier. */
-const FRAME_COUNT = 120;
+const FRAME_COUNT = 60;
 const frameSrc = (index: number) =>
   `/media/hero-cinematic/frame_${String(index + 1).padStart(3, "0")}.webp`;
 
@@ -293,7 +293,7 @@ export function CinematicHero() {
       if (cancelled) return;
       setReady(true);
       setWaiting(false);
-      const batch = 8;
+      const batch = 6;
       for (let i = 1; i < FRAME_COUNT && !cancelled; i += batch) {
         const end = Math.min(FRAME_COUNT, i + batch);
         await Promise.all(
@@ -317,7 +317,7 @@ export function CinematicHero() {
     const section = sectionRef.current;
     const img = framesRef.current[0];
     if (!canvas || !section || !img?.naturalWidth) return;
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
     canvas.width = Math.max(1, Math.round(section.clientWidth * dpr));
     canvas.height = Math.max(1, Math.round(section.clientHeight * dpr));
     const ctx = canvas.getContext("2d");
@@ -388,7 +388,7 @@ export function CinematicHero() {
 
       const fitCanvas = () => {
         if (!canvas) return;
-        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
         const w = section.clientWidth;
         const h = section.clientHeight;
         canvas.width = Math.max(1, Math.round(w * dpr));

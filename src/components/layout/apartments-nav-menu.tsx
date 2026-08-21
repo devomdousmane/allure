@@ -56,7 +56,7 @@ export function NavFlyoutMenu({
 
   const scheduleClose = () => {
     clearClose();
-    closeTimer.current = setTimeout(() => setOpen(false), 120);
+    closeTimer.current = setTimeout(() => setOpen(false), 220);
   };
 
   const openMenu = () => {
@@ -153,7 +153,7 @@ export function NavFlyoutMenu({
         aria-haspopup="menu"
         aria-controls={menuId}
         className={cn(
-          "group relative inline-flex items-center gap-1 font-sans font-medium uppercase tracking-[0.12em]",
+          "group relative inline-flex items-center gap-1 font-sans font-medium uppercase tracking-[0.12em] transition-colors duration-200",
           active && "text-allure-petrol dark:text-allure-gold",
           triggerClassName
         )}
@@ -165,16 +165,18 @@ export function NavFlyoutMenu({
         <ChevronDown
           aria-hidden
           className={cn(
-            "relative z-[1] size-3.5 opacity-70 transition-transform duration-300",
-            open && "rotate-180"
+            "relative z-[1] size-3.5 opacity-55 transition-transform duration-300 ease-out",
+            open && "rotate-180 opacity-90"
           )}
         />
         <span
           aria-hidden
           data-nav-line
           className={cn(
-            "pointer-events-none absolute -bottom-1 left-0 h-px w-full origin-left bg-current",
-            active ? "scale-x-100" : "scale-x-0"
+            "pointer-events-none absolute -bottom-1 left-0 h-px w-full origin-left bg-current transition-transform duration-300 ease-out",
+            active || open
+              ? "scale-x-100"
+              : "scale-x-0 group-hover:scale-x-100 group-focus-visible:scale-x-100"
           )}
         />
       </Link>
@@ -185,17 +187,27 @@ export function NavFlyoutMenu({
         role="menu"
         aria-label={menuAriaLabel}
         className={cn(
-          "invisible absolute z-50 w-[15.5rem] pt-3 opacity-0",
+          "invisible absolute z-50 w-[16rem] opacity-0",
           flyoutSide === "right"
-            ? "top-0 left-full translate-x-0 pl-3"
-            : "top-full left-1/2 -translate-x-1/2"
+            ? "top-0 left-full pl-2"
+            : "top-full left-1/2 -translate-x-1/2 pt-2"
         )}
       >
-        <div className="border border-allure-petrol/10 bg-allure-sand/95 px-1 py-2 shadow-[0_18px_40px_-28px_rgba(30,75,93,0.45)] backdrop-blur-md dark:border-allure-sand/10 dark:bg-allure-petrol-deep/95 dark:shadow-[0_18px_40px_-24px_rgba(0,0,0,0.55)]">
+        {/* Pont hover — évite la fermeture entre le lien et le panneau */}
+        <div
+          aria-hidden
+          className={cn(
+            "absolute bg-transparent",
+            flyoutSide === "right"
+              ? "inset-y-0 left-0 w-2"
+              : "inset-x-0 top-0 h-2"
+          )}
+        />
+        <div className="border border-allure-petrol/12 bg-allure-sand/97 px-1 py-2 backdrop-blur-md dark:border-allure-sand/12 dark:bg-allure-petrol-deep/97">
           <div
             aria-hidden
             data-apt-rule
-            className="mx-3 mb-1 h-px origin-left scale-x-0 bg-gradient-to-r from-allure-gold/80 via-allure-gold/30 to-transparent"
+            className="mx-3 mb-1 h-px origin-left scale-x-0 bg-allure-gold/70"
           />
           <ul ref={listRef} className="flex flex-col">
             {items.map((item) => (
@@ -205,12 +217,16 @@ export function NavFlyoutMenu({
                   role="menuitem"
                   data-apt-item
                   onClick={() => setOpen(false)}
-                  className="group/item flex cursor-pointer items-baseline justify-between gap-4 px-3 py-2.5 transition-colors duration-200 hover:bg-allure-petrol/[0.04] focus-visible:bg-allure-petrol/[0.06] focus-visible:outline-none dark:hover:bg-allure-sand/[0.06]"
+                  className="group/item relative flex cursor-pointer items-baseline justify-between gap-4 px-3 py-2.5 transition-colors duration-200 hover:bg-allure-petrol/[0.05] focus-visible:bg-allure-petrol/[0.07] focus-visible:outline-none dark:hover:bg-allure-sand/[0.07]"
                 >
+                  <span
+                    aria-hidden
+                    className="absolute top-1/2 left-0 h-0 w-0.5 -translate-y-1/2 bg-allure-gold transition-all duration-200 ease-out group-hover/item:h-3.5 group-focus-visible/item:h-3.5"
+                  />
                   <span className="font-sans text-[12px] font-medium uppercase tracking-[0.14em] text-allure-ink/80 transition-colors duration-200 group-hover/item:text-allure-petrol dark:text-allure-sand/80 dark:group-hover/item:text-allure-gold">
                     {item.label}
                   </span>
-                  <span className="font-sans text-[10px] tabular-nums tracking-[0.08em] text-allure-ink/35 dark:text-allure-sand/35">
+                  <span className="font-sans text-[10px] tabular-nums tracking-[0.08em] text-allure-ink/35 transition-colors duration-200 group-hover/item:text-allure-ink/55 dark:text-allure-sand/35 dark:group-hover/item:text-allure-sand/55">
                     {item.meta}
                   </span>
                 </Link>
@@ -223,9 +239,15 @@ export function NavFlyoutMenu({
               role="menuitem"
               data-apt-item
               onClick={() => setOpen(false)}
-              className="flex cursor-pointer px-0 py-2.5 font-sans text-[10px] uppercase tracking-[0.22em] text-allure-gold transition-opacity duration-200 hover:opacity-80"
+              className="group/overview flex cursor-pointer items-center gap-2 px-0 py-2.5 font-sans text-[10px] uppercase tracking-[0.22em] text-allure-gold transition-colors duration-200 hover:text-[color-mix(in_oklab,var(--allure-gold)_80%,var(--allure-petrol))]"
             >
-              {overviewLabel}
+              <span>{overviewLabel}</span>
+              <span
+                aria-hidden
+                className="inline-block translate-x-0 transition-transform duration-200 group-hover/overview:translate-x-0.5"
+              >
+                →
+              </span>
             </Link>
           </div>
         </div>
