@@ -129,7 +129,7 @@ export default function RootLayout({
           rel="preload"
           as="image"
           href="/media/hero-cinematic/frame_001.webp"
-          media="(max-width: 768px)"
+          media="(max-width: 1023px), (hover: none) and (pointer: coarse)"
         />
       </head>
       <body className="flex min-h-full flex-col bg-background text-foreground">

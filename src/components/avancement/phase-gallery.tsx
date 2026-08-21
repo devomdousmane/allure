@@ -29,10 +29,11 @@ type PhaseGalleryProps = {
   /** Priorité sur la première vignette (phase 1) */
   priorityFirst?: boolean;
   /**
-   * `contain` : photo entière dans la box (événements / portraits),
-   * sans crop des têtes — pas besoin d’ouvrir la lightbox.
+   * `faces` : remplit la box (`cover`) ancré en haut — têtes / visages
+   * visibles sans lightbox, sans letterbox ni zoom/parallax.
+   * (`contain` conservé en alias pour rétrocompat.)
    */
-  fit?: "cover" | "contain";
+  fit?: "cover" | "faces" | "contain";
 };
 
 /** Placement bento (grille 6 colonnes desktop) */
@@ -72,7 +73,8 @@ export function PhaseGallery({
   const [open, setOpen] = useState(false);
   const [index, setIndex] = useState(0);
   const reduced = usePrefersReducedMotion();
-  const showFull = fit === "contain";
+  /** Événements / portraits : fill + ancrage haut, pas de crop agressif */
+  const facesFit = fit === "faces" || fit === "contain";
 
   useGSAP(
     () => {
@@ -117,10 +119,10 @@ export function PhaseGallery({
         y: isNarrow ? 24 : 40,
         clipPath: isNarrow ? "inset(6% 4% 6% 4%)" : "inset(14% 10% 14% 10%)",
       });
-      // Contain : pas de zoom/crop qui coupe les têtes
+      // Faces : pas de zoom qui coupe le haut du cadre
       gsap.set(imgs, {
-        scale: showFull ? 1 : 1.16,
-        transformOrigin: "50% 50%",
+        scale: facesFit ? 1 : 1.16,
+        transformOrigin: facesFit ? "50% 0%" : "50% 50%",
       });
 
       // Entrée orchestrée : batch ScrollTrigger (skill gsap-scrolltrigger)
@@ -140,7 +142,7 @@ export function PhaseGallery({
           });
           batch.forEach((tile) => {
             const img = tile.querySelector<HTMLElement>("[data-gallery-img]");
-            if (!img || showFull) return;
+            if (!img || facesFit) return;
             gsap.to(img, {
               scale: 1,
               duration: DURATION.slow,
@@ -161,15 +163,15 @@ export function PhaseGallery({
           });
           batch.forEach((tile) => {
             const img = tile.querySelector<HTMLElement>("[data-gallery-img]");
-            if (img && !showFull) {
+            if (img && !facesFit) {
               gsap.to(img, { scale: 1.1, duration: 0.35, overwrite: "auto" });
             }
           });
         },
       });
 
-      // Parallax scrub — désactivé en contain (évite de couper les têtes)
-      if (!showFull) {
+      // Parallax scrub — désactivé en faces (évite de couper les têtes)
+      if (!facesFit) {
         const parallaxAmp = isNarrow ? 6 : 12;
         imgs.forEach((img) => {
           const tile = img.closest<HTMLElement>("[data-gallery-tile]");
@@ -193,7 +195,7 @@ export function PhaseGallery({
     },
     {
       scope: rootRef,
-      dependencies: [reduced, images, showFull],
+      dependencies: [reduced, images, facesFit],
       revertOnUpdate: true,
     }
   );
@@ -243,7 +245,7 @@ export function PhaseGallery({
                       data-gallery-img
                       className={cn(
                         "absolute will-change-transform",
-                        showFull ? "inset-0" : "inset-[-12%]"
+                        facesFit ? "inset-0" : "inset-[-12%]"
                       )}
                     >
                       <Image
@@ -257,10 +259,9 @@ export function PhaseGallery({
                         }
                         priority={priorityFirst && i === 0}
                         className={cn(
-                          "transition-transform duration-700 ease-out motion-reduce:transition-none",
-                          showFull
-                            ? "object-contain object-center bg-allure-petrol/[0.04] dark:bg-allure-sand/[0.04]"
-                            : "object-cover object-top group-hover:scale-[1.03] motion-reduce:group-hover:scale-100"
+                          "object-cover object-top transition-transform duration-700 ease-out motion-reduce:transition-none",
+                          !facesFit &&
+                            "group-hover:scale-[1.03] motion-reduce:group-hover:scale-100"
                         )}
                       />
                     </span>
@@ -268,10 +269,7 @@ export function PhaseGallery({
 
                   <span
                     aria-hidden
-                    className={cn(
-                      "pointer-events-none absolute inset-0 bg-gradient-to-t from-allure-petrol-deep/70 via-allure-petrol-deep/10 to-transparent transition-opacity duration-300 group-hover:opacity-95",
-                      showFull ? "opacity-40" : "opacity-80"
-                    )}
+                    className="pointer-events-none absolute inset-0 bg-gradient-to-t from-allure-petrol-deep/70 via-allure-petrol-deep/10 to-transparent opacity-80 transition-opacity duration-300 group-hover:opacity-95"
                   />
                   <span
                     aria-hidden

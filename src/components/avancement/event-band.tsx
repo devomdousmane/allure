@@ -52,7 +52,7 @@ export function EventBand({ event, tone = "sand" }: EventBandProps) {
         </div>
 
         <div className="mt-12">
-          <PhaseGallery images={event.images} fit="contain" />
+          <PhaseGallery images={event.images} fit="faces" />
         </div>
       </div>
     </section>

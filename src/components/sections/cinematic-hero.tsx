@@ -19,10 +19,21 @@ registerGsap();
 const OPENING_STILL = "/media/hero-cinematic/opening.webp";
 /** MP4 en premier : plus léger que le WebM actuel, seek H.264 plus fiable pour le scrub. */
 const HERO_MP4 = "/media/hero-cinematic/hero.mp4";
-/** Séquence WebP — iOS / mobile : seek vidéo `currentTime` trop irrégulier. */
+/** Séquence WebP — iOS / mobile / tablette : seek vidéo `currentTime` trop irrégulier. */
 const FRAME_COUNT = 60;
 const frameSrc = (index: number) =>
   `/media/hero-cinematic/frame_${String(index + 1).padStart(3, "0")}.webp`;
+/**
+ * Frames si viewport ≤1023px OU pointeur tactile (évite iPad / paysage
+ * qui passaient en mode vidéo avec l’ancien seuil 768px).
+ */
+const FRAME_SCRUB_MQ =
+  "(max-width: 1023px), (hover: none) and (pointer: coarse)";
+
+function prefersFrameScrub() {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia(FRAME_SCRUB_MQ).matches;
+}
 
 function drawCoverFrame(
   ctx: CanvasRenderingContext2D,
@@ -205,11 +216,20 @@ export function CinematicHero() {
   const progress = useMotionValue(0);
 
   useEffect(() => {
-    const mq = window.matchMedia("(max-width: 768px)");
-    const sync = () => setIsMobile(mq.matches);
+    const mq = window.matchMedia(FRAME_SCRUB_MQ);
+    const sync = () => setIsMobile(prefersFrameScrub());
     sync();
     mq.addEventListener("change", sync);
-    return () => mq.removeEventListener("change", sync);
+    // hover/pointer peuvent changer (clavier branché, etc.)
+    const mqHover = window.matchMedia("(hover: none)");
+    const mqPointer = window.matchMedia("(pointer: coarse)");
+    mqHover.addEventListener("change", sync);
+    mqPointer.addEventListener("change", sync);
+    return () => {
+      mq.removeEventListener("change", sync);
+      mqHover.removeEventListener("change", sync);
+      mqPointer.removeEventListener("change", sync);
+    };
   }, []);
 
   const textY = useTransform(progress, [0, 1], [0, -56]);
@@ -635,29 +655,28 @@ export function CinematicHero() {
     <section
       ref={sectionRef}
       data-cinematic-hero
+      data-hero-media={
+        isMobile === true ? "frames" : isMobile === false ? "video" : "pending"
+      }
       className="relative h-dvh w-full overflow-hidden bg-allure-petrol-deep"
       id="accueil"
       aria-label="Résidence Allure — introduction cinématographique"
     >
-      {/* Canvas toujours là (pin GSAP). Vidéo desktop — MP4 seul (WebM plus lourd). */}
-      {isMobile !== true ? (
+      {/* Vidéo UNIQUEMENT desktop — jamais montée sur mobile (évite tout fetch MP4). */}
+      {isMobile === false ? (
         <video
           ref={videoRef}
           className={cn(
             "absolute inset-0 z-0 h-full w-full object-cover transition-opacity duration-300",
-            showStaticFallback || isMobile !== false
-              ? "opacity-0"
-              : "opacity-100"
+            showStaticFallback ? "opacity-0" : "opacity-100"
           )}
           muted
           playsInline
-          preload={isMobile === false ? "auto" : "none"}
+          preload="auto"
           poster={OPENING_STILL}
           aria-hidden
         >
-          {isMobile === false ? (
-            <source src={HERO_MP4} type="video/mp4" />
-          ) : null}
+          <source src={HERO_MP4} type="video/mp4" />
         </video>
       ) : null}
 

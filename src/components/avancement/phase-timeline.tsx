@@ -314,7 +314,7 @@ export function PhaseTimeline({ phases }: PhaseTimelineProps) {
                 <PhaseGallery
                   images={phase.images}
                   priorityFirst={index === 0}
-                  fit={phase.id === "phase-7" ? "contain" : "cover"}
+                  fit={phase.id === "phase-7" ? "faces" : "cover"}
                 />
               </div>
             </li>
