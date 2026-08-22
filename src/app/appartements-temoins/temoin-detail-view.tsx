@@ -6,6 +6,7 @@ import {
   TemoinCta,
   TemoinDossier,
   TemoinGallery,
+  TemoinMatterportTour,
   TemoinPlan,
   TemoinVideo,
 } from "@/components/temoins";
@@ -19,6 +20,9 @@ type TemoinDetailViewProps = {
 };
 
 function heroPrimary(temoin: TemoinDetail) {
+  if (temoin.matterport) {
+    return { href: "#visite-virtuelle", label: "Visite virtuelle" };
+  }
   if (temoin.video) {
     return { href: "#visite-3d", label: "Visite 3D" };
   }
@@ -81,6 +85,11 @@ export function TemoinDetailView({ temoin }: TemoinDetailViewProps) {
         <TemoinGallery temoin={temoin} />
         <TemoinPlan temoin={temoin} />
         <TemoinDossier temoin={temoin} />
+        {temoin.matterport ? (
+          <div id="visite-virtuelle">
+            <TemoinMatterportTour temoin={temoin} />
+          </div>
+        ) : null}
         {temoin.video ? (
           <div id="visite-3d">
             <TemoinVideo temoin={temoin} />

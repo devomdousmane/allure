@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 
 const HIGHLIGHTS = [
   { label: "Galerie pièce à pièce", value: "20+" },
-  { label: "Visite 3D", value: "HD" },
+  { label: "Visite virtuelle", value: "3D" },
   { label: "Showroom", value: "RDV" },
 ] as const;
 
@@ -158,10 +158,16 @@ export function TemoinsShowcaseSection() {
                       <span className="rounded-full border border-white/20 bg-black/35 px-3 py-1 font-sans text-[10px] uppercase tracking-[0.14em] text-white backdrop-blur-md">
                         {temoin.typologyLabel}
                       </span>
-                      {temoin.video ? (
+                      {temoin.video || temoin.matterport ? (
                         <span className="inline-flex items-center gap-1 rounded-full border border-allure-gold/40 bg-allure-gold/15 px-2.5 py-1 font-sans text-[10px] uppercase tracking-[0.12em] text-allure-gold backdrop-blur-md">
-                          <Play className="size-2.5 fill-current" aria-hidden />
-                          3D
+                          {temoin.matterport ? (
+                            "Visite virtuelle"
+                          ) : (
+                            <>
+                              <Play className="size-2.5 fill-current" aria-hidden />
+                              3D
+                            </>
+                          )}
                         </span>
                       ) : temoin.mediaFinal ? null : (
                         <span className="rounded-full border border-white/15 bg-white/10 px-2.5 py-1 font-sans text-[10px] uppercase tracking-[0.12em] text-white/70 backdrop-blur-md">

@@ -22,6 +22,14 @@ export type TemoinVideoSrc = {
   poster: string;
 };
 
+/** Visite Matterport — chargée au clic (poster local). */
+export type TemoinMatterport = {
+  /** ID modèle Matterport (`m=` dans l’URL show). */
+  modelId: string;
+  poster: string;
+  title?: string;
+};
+
 export type TemoinDossierPage = {
   src: string;
   alt: string;
@@ -37,8 +45,10 @@ export type TemoinDetail = {
   heroImage: string;
   rooms: TemoinRoom[];
   gallery: TemoinImage[];
-  /** Absent si le témoin n’a pas encore de visite 3D. */
+  /** Absent si le témoin n’a pas encore de visite 3D vidéo. */
   video?: TemoinVideoSrc;
+  /** Visite virtuelle Matterport (prioritaire sur la vidéo si les deux existent). */
+  matterport?: TemoinMatterport;
   planImage?: string;
   /** Lien vers le plan interactif typologie (`/les-appartements/...#plan`). */
   planHref?: string;
@@ -181,6 +191,13 @@ function typeAImg(
 export const TYPE_A_MEDIA = {
   hero: `${TYPE_A_BASE}/salon/salon-et-salle-a-manger.webp`,
   planImage: `${TYPE_A_BASE}/plan/floor-1.webp`,
+  /** Visite Matterport F4 Almadies — poster salon fourni. */
+  matterport: {
+    modelId: "ctqSSwX97oz",
+    poster:
+      "/media/appartements-temoins/visite-virtuelle/matterport-poster.webp",
+    title: "Visite virtuelle — appartement témoin F4",
+  },
   gallery: [
     typeAImg("axo", "plan-3d", "Axonométrie 3D — Type A"),
     typeAImg("salon", "salon", "Salon"),

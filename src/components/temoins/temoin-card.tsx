@@ -45,10 +45,16 @@ export function TemoinCard({ temoin, className, offset }: TemoinCardProps) {
             <span className="rounded-full border border-white/20 bg-black/35 px-3 py-1.5 font-sans text-[10px] uppercase tracking-[0.14em] text-white backdrop-blur-md">
               {temoin.typologyLabel}
             </span>
-            {temoin.video ? (
+            {temoin.video || temoin.matterport ? (
               <span className="inline-flex items-center gap-1 rounded-full border border-allure-gold/40 bg-allure-gold/20 px-2.5 py-1.5 font-sans text-[10px] uppercase tracking-[0.12em] text-allure-gold backdrop-blur-md">
-                <Play className="size-2.5 fill-current" aria-hidden />
-                Visite 3D
+                {temoin.matterport ? (
+                  "Visite virtuelle"
+                ) : (
+                  <>
+                    <Play className="size-2.5 fill-current" aria-hidden />
+                    Visite 3D
+                  </>
+                )}
               </span>
             ) : temoin.mediaFinal ? null : (
               <span className="rounded-full border border-white/15 bg-white/10 px-2.5 py-1.5 font-sans text-[10px] uppercase tracking-[0.12em] text-white/75 backdrop-blur-md">
