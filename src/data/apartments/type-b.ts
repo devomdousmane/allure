@@ -2,7 +2,7 @@ import type { ApartmentDetail } from "./types";
 
 /**
  * Appartement Type B — données issues des plans WP
- * (dimmenssion_app-Type-B.jpg, étages 1–14).
+ * (dimmenssion_app-Type-B.jpg, étages 1–11).
  * Plan interactif : SVG allure-type-b-interactive.svg (zones .room).
  */
 export const TYPE_B: ApartmentDetail = {
@@ -12,7 +12,7 @@ export const TYPE_B: ApartmentDetail = {
   tagline: "L’élégance, même dans les détails",
   description:
     "Typologie familiale équilibrée : grand séjour, espace familial dédié, suite parentale avec dressing, et terrasse prolongée d’un balcon.",
-  floors: "Étages 1–14",
+  floors: "Étages 1–11",
   surfaceTotal: 203.75,
   bedrooms: 3,
   bathrooms: 3,

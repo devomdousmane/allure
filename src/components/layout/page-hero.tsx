@@ -29,7 +29,7 @@ export function PageHero({
   eyebrow,
   title,
   description,
-  image = "/media/hero-cinematic/opening.webp",
+  image = "/media/apps-temoins-almadies/salon-salle-a-manger.webp",
   videoSrc,
   className,
   actions,

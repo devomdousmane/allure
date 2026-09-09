@@ -28,6 +28,9 @@ export const SITE = {
   address: "Route des Almadies, Dakar, Sénégal",
   priceFrom: "165M FCFA",
   delivery: "2026",
+  /** Immeuble résidentiel */
+  levels: "R+11",
+  floorsLabel: "Étages 1–11",
   /** Logo clair — texte sombre, fond transparent */
   logoLight: "/logo/logo-allure-light.webp",
   /** Logo sombre — texte argenté, fond transparent */

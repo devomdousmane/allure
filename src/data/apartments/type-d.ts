@@ -2,7 +2,7 @@ import type { ApartmentDetail } from "./types";
 
 /**
  * Appartement Type D — données issues des plans WP
- * (dimenssion-Type-D.jpg, étages 1–14).
+ * (dimenssion-Type-D.jpg, étages 1–11).
  * Plan interactif : SVG allure-type-d-interactive.svg (15 zones .room).
  */
 export const TYPE_D: ApartmentDetail = {
@@ -12,7 +12,7 @@ export const TYPE_D: ApartmentDetail = {
   tagline: "L’élégance, même dans les détails",
   description:
     "Typologie compacte et fluide : grand salon-salle à manger, trois chambres, arrière-cuisine, terrasse et balcon — idéale pour un quotidien sans superflu.",
-  floors: "Étages 1–14",
+  floors: "Étages 1–11",
   surfaceTotal: 164.07,
   bedrooms: 3,
   bathrooms: 3,

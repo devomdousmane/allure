@@ -71,7 +71,7 @@ const COLUMNS: { offset: string; items: Tile[] }[] = [
     items: [
       {
         id: "6",
-        label: "Axonométrie",
+        label: "Vue d’ensemble",
         image: TEMOIN_MEDIA.axo1,
         href: "/appartements-temoins",
         size: "sm",

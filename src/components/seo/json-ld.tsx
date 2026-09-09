@@ -108,6 +108,14 @@ export function apartmentComplexJsonLd() {
     },
     image: absolute(SITE.ogImage),
     numberOfAccommodationUnits: 70,
+    numberOfAvailableAccommodationUnits: 70,
+    additionalProperty: [
+      {
+        "@type": "PropertyValue",
+        name: "Niveaux",
+        value: SITE.levels,
+      },
+    ],
     amenityFeature: AMENITY_LABELS.map((name) => ({
       "@type": "LocationFeatureSpecification",
       name,

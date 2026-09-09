@@ -2,7 +2,7 @@ import type { ApartmentDetail } from "./types";
 
 /**
  * Appartement Type A — données issues des plans WP
- * (dimenssions_apartment_A-2.jpg, étages 1–14).
+ * (dimenssions_apartment_A-2.jpg, étages 1–11).
  *
  * Plan interactif : SVG allure-type-a-interactive.svg (zones .room).
  */
@@ -13,7 +13,7 @@ export const TYPE_A: ApartmentDetail = {
   tagline: "L’élégance, même dans les détails",
   description:
     "La plus généreuse typologie d’Allure : séjour ouvert, suite parentale avec dressing, deux chambres enfants en suite, et une double terrasse pour prolonger le quotidien aux Almadies.",
-  floors: "Étages 1–14",
+  floors: "Étages 1–11",
   surfaceTotal: 247.44,
   bedrooms: 3,
   bathrooms: 3,
@@ -27,7 +27,7 @@ export const TYPE_A: ApartmentDetail = {
     "Double terrasse (39,45 m²)",
     "Chambre domestique",
   ],
-  heroImage: "/apartments/type-a/gallery-liv-01.webp",
+  heroImage: "/media/apps-temoins-almadies/salon-salle-a-manger.webp",
   planFace: "/apartments/type-a/plan-face.webp",
   planHaut: "/apartments/type-a/plan-haut.webp",
   dimensionsPlan: "/apartments/type-a/dimensions-plan.webp",

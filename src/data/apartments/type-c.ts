@@ -2,7 +2,7 @@ import type { ApartmentDetail } from "./types";
 
 /**
  * Appartement Type C — données issues des plans WP
- * (dimenssions_app_type-c.jpg, étages 1–14).
+ * (dimenssions_app_type-c.jpg, étages 1–11).
  * Plan interactif : SVG allure-type-c-interactive.svg (16 zones .room).
  */
 export const TYPE_C: ApartmentDetail = {
@@ -12,7 +12,7 @@ export const TYPE_C: ApartmentDetail = {
   tagline: "L’élégance, même dans les détails",
   description:
     "Séjour monumental de près de 70 m², kitchenette et cuisine, suite parentale généreuse et chambre domestique — une typologie pensée pour recevoir.",
-  floors: "Étages 1–14",
+  floors: "Étages 1–11",
   surfaceTotal: 212.66,
   bedrooms: 3,
   bathrooms: 3,

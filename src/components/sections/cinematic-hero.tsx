@@ -1,5 +1,11 @@
 "use client";
 
+/**
+ * Hero cinématographique (scrub vidéo / frames).
+ * Mis de côté : le home utilise `HomeHero` via `HeroModeSwitch`.
+ * Conservé pour une réactivation éventuelle — ne pas supprimer.
+ */
+
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";

@@ -47,9 +47,11 @@ export type TemoinDetail = {
   gallery: TemoinImage[];
   /** Absent si le témoin n’a pas encore de visite 3D vidéo. */
   video?: TemoinVideoSrc;
-  /** Visite virtuelle Matterport (prioritaire sur la vidéo si les deux existent). */
+  /** Visite virtuelle Matterport (optionnel — non utilisé si plan PDF fourni). */
   matterport?: TemoinMatterport;
   planImage?: string;
+  /** PDF plan d’étage (téléchargement). */
+  planPdf?: string;
   /** Lien vers le plan interactif typologie (`/les-appartements/...#plan`). */
   planHref?: string;
   dossierPdf?: string;
@@ -177,75 +179,92 @@ export const TYPE_D_MEDIA = {
   ] satisfies TemoinImage[],
 };
 
-const TYPE_A_BASE = "/media/appartements-temoins/type-a";
-
-function typeAImg(
-  room: TemoinRoomId,
-  file: string,
-  alt: string
-): TemoinImage {
-  return { src: `${TYPE_A_BASE}/${room}/${file}.webp`, alt, room };
-}
-
-/** Chemins WebP Type A (drop appartement-temoins-1). */
+/** Chemins WebP Type A — apps-temoins-almadies (optimisés). */
 export const TYPE_A_MEDIA = {
-  hero: `${TYPE_A_BASE}/salon/salon-et-salle-a-manger.webp`,
-  planImage: `${TYPE_A_BASE}/plan/floor-1.webp`,
-  /** Visite Matterport F4 Almadies — poster salon fourni. */
-  matterport: {
-    modelId: "ctqSSwX97oz",
-    poster:
-      "/media/appartements-temoins/visite-virtuelle/matterport-poster.webp",
-    title: "Visite virtuelle — appartement témoin F4",
-  },
+  hero: "/media/apps-temoins-almadies/salon-salle-a-manger.webp",
+  planImage: "/media/apps-temoins-almadies/plan/floor-1-p1.webp",
+  planPdf: "/media/apps-temoins-almadies/plan/floor-1.pdf",
   gallery: [
-    typeAImg("axo", "plan-3d", "Axonométrie 3D — Type A"),
-    typeAImg("salon", "salon", "Salon"),
-    typeAImg("salon", "salon-et-salle-a-manger", "Salon et salle à manger"),
-    typeAImg("salon", "salon-et-salle-a-manger-1", "Salon et salle à manger — vue 02"),
-    typeAImg("salon", "salon-et-salle-a-manger-2", "Salon et salle à manger — vue 03"),
-    typeAImg("salon", "salon-et-salle-a-manger-3", "Salon et salle à manger — vue 04"),
-    typeAImg("salon", "salon-et-salle-a-manger-4", "Salon et salle à manger — vue 05"),
-    typeAImg("salon", "balcon-salon", "Balcon du salon"),
-    typeAImg("salon", "balcon-salon-1", "Balcon du salon — vue 02"),
-    typeAImg("cuisine", "cuisine", "Cuisine"),
-    typeAImg("cuisine", "cuisine-1", "Cuisine — vue 02"),
-    typeAImg("chambre", "chambre-parent", "Chambre parentale"),
-    typeAImg("chambre", "chambre-parent-1", "Chambre parentale — vue 02"),
-    typeAImg("chambre", "chambre-parent-2", "Chambre parentale — vue 03"),
-    typeAImg("chambre", "chambre-parent-3", "Chambre parentale — vue 04"),
-    typeAImg("chambre", "chambre-parent-4", "Chambre parentale — vue 05"),
-    typeAImg("chambre", "chambre-parent-dressing", "Dressing — chambre parentale"),
-    typeAImg("chambre", "balcon-chambre-parent", "Balcon — chambre parentale"),
-    typeAImg("chambre", "balcon-chambre-parent-1", "Balcon — chambre parentale, vue 02"),
-    typeAImg("chambre", "chambre-1", "Chambre 1"),
-    typeAImg("chambre", "chambre-1-1", "Chambre 1 — vue 02"),
-    typeAImg("chambre", "chambre-2", "Chambre 2"),
-    typeAImg("chambre", "chambre-2-1", "Chambre 2 — vue 02"),
-    typeAImg("chambre", "chambre-2-2", "Chambre 2 — vue 03"),
-    typeAImg("chambre", "chambre-2-3", "Chambre 2 — vue 04"),
-    typeAImg("chambre", "acces-chambre-1-et-2", "Accès chambres 1 et 2"),
-    typeAImg("chambre", "couloir-entre", "Couloir"),
-    typeAImg("sdb", "chambre-parent-salle-de-bain", "Salle de bain parentale"),
-    typeAImg(
-      "sdb",
-      "chambre-parent-salle-de-bain-1",
-      "Salle de bain parentale — vue 02"
-    ),
-    typeAImg(
-      "sdb",
-      "chambre-parent-salle-de-bain-2",
-      "Salle de bain parentale — vue 03"
-    ),
-    typeAImg(
-      "sdb",
-      "chambre-parent-salle-de-bain-3",
-      "Salle de bain parentale — vue 04"
-    ),
-    typeAImg("sdb", "salle-de-bain-chambre-1", "Salle de bain — chambre 1"),
-    typeAImg("sdb", "salle-de-bain-chambre-1-1", "Salle de bain — chambre 1, vue 02"),
-    typeAImg("sdb", "chambre-2-salle-de-bain", "Salle de bain — chambre 2"),
-    typeAImg("sdb", "chambre-2-salle-de-bain-1", "Salle de bain — chambre 2, vue 02"),
-    typeAImg("sdb", "toilette-visiteur", "Toilette visiteur"),
+    {
+      src: "/media/apps-temoins-almadies/dollhouse-view.webp",
+      alt: "Vue d’ensemble 3D — appartement témoin",
+      room: "axo" as const,
+    },
+    {
+      src: "/media/apps-temoins-almadies/salon-salle-a-manger.webp",
+      alt: "Salon et salle à manger",
+      room: "salon" as const,
+    },
+    {
+      src: "/media/apps-temoins-almadies/salon.webp",
+      alt: "Salon",
+      room: "salon" as const,
+    },
+    {
+      src: "/media/apps-temoins-almadies/salon-1.webp",
+      alt: "Salon — vue 02",
+      room: "salon" as const,
+    },
+    {
+      src: "/media/apps-temoins-almadies/living-room.webp",
+      alt: "Living room",
+      room: "salon" as const,
+    },
+    {
+      src: "/media/apps-temoins-almadies/living-room-1.webp",
+      alt: "Living room — vue 02",
+      room: "salon" as const,
+    },
+    {
+      src: "/media/apps-temoins-almadies/cuisine.webp",
+      alt: "Cuisine",
+      room: "cuisine" as const,
+    },
+    {
+      src: "/media/apps-temoins-almadies/cuisine-1.webp",
+      alt: "Cuisine — vue 02",
+      room: "cuisine" as const,
+    },
+    {
+      src: "/media/apps-temoins-almadies/kitchen.webp",
+      alt: "Cuisine — détail",
+      room: "cuisine" as const,
+    },
+    {
+      src: "/media/apps-temoins-almadies/bedroom.webp",
+      alt: "Chambre",
+      room: "chambre" as const,
+    },
+    {
+      src: "/media/apps-temoins-almadies/bedroom-1.webp",
+      alt: "Chambre — vue 02",
+      room: "chambre" as const,
+    },
+    {
+      src: "/media/apps-temoins-almadies/couloir.webp",
+      alt: "Couloir",
+      room: "chambre" as const,
+    },
+    {
+      src: "/media/apps-temoins-almadies/bathroom.webp",
+      alt: "Salle de bain",
+      room: "sdb" as const,
+    },
+    {
+      src: "/media/apps-temoins-almadies/bathroom-1.webp",
+      alt: "Salle de bain — vue 02",
+      room: "sdb" as const,
+    },
+    {
+      src: "/media/apps-temoins-almadies/salle-de-bain.webp",
+      alt: "Salle de bain — vue 03",
+      room: "sdb" as const,
+    },
+    {
+      src: "/media/apps-temoins-almadies/09042026_214828.webp",
+      alt: "Volumes — vue immersive",
+      room: "salon" as const,
+    },
   ] satisfies TemoinImage[],
 };
+

@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 
 const HIGHLIGHTS = [
   { label: "Galerie pièce à pièce", value: "20+" },
-  { label: "Visite virtuelle", value: "3D" },
+  { label: "Plan d’étage", value: "PDF" },
   { label: "Showroom", value: "RDV" },
 ] as const;
 

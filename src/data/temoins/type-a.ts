@@ -14,12 +14,12 @@ export const TEMOIN_TYPE_A: TemoinDetail = {
   typologyLabel: "Type A",
   mediaFinal: true,
   description:
-    "Visitez l’appartement témoin Type A : séjour ouvert, suite parentale avec dressing, deux chambres, deux balcons — en images, plan, dossier et visite virtuelle Matterport.",
+    "Visitez l’appartement témoin Type A aux Almadies : séjour ouvert, volumes lumineux, cuisine et suites — en galerie et plan d’étage, avant la livraison.",
   heroImage: TYPE_A_MEDIA.hero,
   rooms: TEMOIN_ROOMS,
   gallery: TYPE_A_MEDIA.gallery,
-  matterport: TYPE_A_MEDIA.matterport,
   planImage: TYPE_A_MEDIA.planImage,
+  planPdf: TYPE_A_MEDIA.planPdf,
   planHref: "/les-appartements/type-a#plan",
   dossierPdf: TEMOIN_A_DOSSIER_PDF,
   dossierPages: TEMOIN_A_DOSSIER.pages.map((page, i) => ({

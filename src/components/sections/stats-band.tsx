@@ -9,9 +9,9 @@ import { useSectionReveal } from "@/hooks/use-section-reveal";
 import { HomeCtaRow } from "@/components/home-scroll/home-cta-row";
 
 const STATS = [
+  { value: 11, suffix: "", label: "Niveaux R+11" },
   { value: 5, suffix: "", label: "Typologies d'appartements" },
   { value: 300, suffix: " m", label: "De la plage des Almadies" },
-  { value: 13, suffix: "", label: "Services & prestations" },
   { value: 2026, suffix: "", label: "Livraison prévue" },
 ] as const;
 

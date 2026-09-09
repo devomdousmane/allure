@@ -2,7 +2,7 @@ import type { ApartmentDetail } from "./types";
 
 /**
  * Studio — données issues des plans WP
- * (dimenssions_studio, étages 1–14).
+ * (dimenssions_studio, étages 1–11).
  * Plan interactif : SVG allure-studio-interactive.svg (9 zones .room).
  */
 export const STUDIO: ApartmentDetail = {
@@ -12,7 +12,7 @@ export const STUDIO: ApartmentDetail = {
   tagline: "L’élégance, même dans les détails",
   description:
     "Pied-à-terre premium aux Almadies : chambre séparée, salon, salle à manger, kitchenette et terrasse — un format optimisé sans compromis sur le standing.",
-  floors: "Étages 1–14",
+  floors: "Étages 1–11",
   surfaceTotal: 81.69,
   bedrooms: 1,
   bathrooms: 1,
