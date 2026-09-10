@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { motion, useScroll, useTransform } from "motion/react";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { ArrowDown, ArrowUpRight } from "lucide-react";
 import { MediaImage } from "@/components/ui/media-image";
 import { Button } from "@/components/ui/button";
 import { APPS_TEMOINS_MEDIA } from "@/lib/apps-temoins-media";
+import { emitHeroPinActive } from "@/lib/hero-pin";
 import { SITE } from "@/lib/site";
 import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
 import { cn } from "@/lib/utils";
@@ -24,6 +25,13 @@ export function HomeHero() {
   });
   const y = useTransform(scrollYProgress, [0, 1], ["0%", reduced ? "0%" : "12%"]);
   const opacity = useTransform(scrollYProgress, [0, 0.85], [1, 0.35]);
+
+  // Pas de pin GSAP : signaler inactive pour ramener la nav horizontale
+  // (sinon le header reste en rail vertical home).
+  useEffect(() => {
+    emitHeroPinActive(false);
+    return () => emitHeroPinActive(false);
+  }, []);
 
   return (
     <section

@@ -15,7 +15,7 @@ export function SectionRail() {
   const lenis = useLenis();
   const [activeId, setActiveId] = useState<string | null>(null);
   const [dakarActive, setDakarActive] = useState(false);
-  const [heroPinned, setHeroPinned] = useState(true);
+  const [heroPinned, setHeroPinned] = useState(false);
   const triggers = useRef<ScrollTrigger[]>([]);
 
   useEffect(() => {

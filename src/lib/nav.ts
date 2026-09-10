@@ -22,7 +22,7 @@ export const APARTMENT_NAV = [
   {
     href: "/appartements-temoins",
     label: "Témoins",
-    meta: "Visite 3D",
+    meta: "Galerie",
   },
   {
     href: "/brochure",

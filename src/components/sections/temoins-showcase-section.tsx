@@ -84,7 +84,7 @@ export function TemoinsShowcaseSection() {
               className="mt-5 max-w-md font-sans text-base leading-relaxed text-allure-ink/80 dark:text-white/80"
             >
               Les appartements témoins vous montrent les volumes, la lumière et
-              les finitions — en galerie et en visite 3D. Le meilleur moyen de
+              les finitions — en galerie et plans d’étage. Le meilleur moyen de
               se projeter, puis de réserver une visite sur place.
             </p>
 

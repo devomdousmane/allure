@@ -74,7 +74,8 @@ export function SiteHeader() {
   const menuBtnRef = useRef<HTMLButtonElement>(null);
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
-  const [heroOverlay, setHeroOverlay] = useState(pathname === "/");
+  // false par défaut : le pin hero (cinematic) active le rail ; HomeHero n'en a pas
+  const [heroOverlay, setHeroOverlay] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const closingRef = useRef(false);
   const reduced = usePrefersReducedMotion();

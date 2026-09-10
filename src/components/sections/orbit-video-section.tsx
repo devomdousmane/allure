@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 registerGsap();
 
 const VIDEO_SRC = "/video/frame-videos/video-3.mp4";
-const POSTER_SRC = "/media/hero-cinematic/frame_088.webp";
+const POSTER_SRC = "/media/hero-cinematic/frame_060.webp";
 
 /**
  * Pont Vision → Offre : vidéo d’approche (comme le chantier),

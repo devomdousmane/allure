@@ -240,7 +240,7 @@ export function AnnexChapterPin() {
     pinFromStation(0, HOME_PIN_SECTION_IDS[0], 0)
   );
   const [visible, setVisible] = useState(false);
-  const heroPinnedRef = useRef(true);
+  const heroPinnedRef = useRef(false);
 
   const wrapRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
